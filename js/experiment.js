@@ -1,11 +1,146 @@
+/* initialize jsPsych */
 var jsPsych = initJsPsych({
     on_finish: function () {
         jsPsych.data.displayData();
     }
 });
 
+const fontLink = document.createElement("link");
+fontLink.rel = "stylesheet";
+fontLink.href = "https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap";
+document.head.appendChild(fontLink);
 
+//STYLES
+const style = document.createElement("style");
+style.textContent = `
+
+.kbd { display: inline-block;
+padding: 0.15em 0.5em;
+border: 1px solid #555;
+border-radius: 4px;
+background: #f5f5f5;
+font-family: monospace;
+box-shadow: 0 2px 0 #aaa;
+}
+
+.btn-inline {
+display: inline-block;
+padding: 2px 6px;
+border: 1px solid #333;
+border-radius: 3px;
+font-weight: 500;
+background: #f5f5f5;
+}
+
+
+/* Base style shared by all number boxes */
+.num-box {
+border: 2px solid #333;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 24px;
+}
+
+/* Demo number boxes (RNG demo, inline) */
+.demo-num-box {
+width: 40px;
+height: 50px;
+position: static;
+}
+
+/* Robot number boxes (overlayed on image) */
+.robot-num-box {
+font-family: "Orbitron", "Courier New", monospace;
+letter-spacing: 1.5px;
+font-weight: 600;
+width: 40px;
+height: 50px;
+position: absolute;
+}
+
+.gen-btn {
+width: 60px;
+height: 60px;
+background-color: #666;   /* darker grey */
+border: none;
+border-radius: 50%;
+box-shadow:
+0 6px 0 #444,            /* strong bottom edge */
+0 10px 14px rgba(0,0,0,0.35); /* deeper shadow */
+
+cursor: pointer;
+transition:
+transform 0.1s ease,
+box-shadow 0.1s ease,
+background-color 0.1s ease;
+}
+
+.gen-btn:hover {
+background-color: #707070;  /* slight lift on hover */
+}
+
+.gen-btn:active {
+transform: translateY(6px);
+box-shadow:
+0 2px 0 #444,
+0 4px 6px rgba(0,0,0,0.3);
+}
+
+box-shadow:{
+0 2px 0 #1b3563,
+0 3px 6px rgba(0,0,0,0.2);
+}
+
+.robot-container {
+position: relative;
+width: 300px;
+margin: 20px auto;
+}
+
+.robot-container img {
+width: 100%;
+display: block;
+}
+
+.robot-container .robot-num-box {
+position: absolute;
+}
+
+/* robot torso panel positions */
+.robot-container #box1 {
+top: 225px;
+left: 83px;
+}
+
+.robot-container #box2 {
+top: 225px;
+left: 130px;
+}
+
+.robot-container #box3 {
+top: 225px;
+left: 177px;
+}
+
+.robot-input {
+width: 120%;
+height: 120%;
+border: none;
+text-align: center;
+font-family: "Orbitron", monospace;
+font-size: 16px;
+background: transparent;
+outline: none;
+transform: translateY(-18px);
+}
+
+`;
+document.head.appendChild(style);
+
+/* create timeline */
 var timeline = [];
+
 
 
 var welcome = {
@@ -16,9 +151,10 @@ var welcome = {
 timeline.push(welcome);
 
 
+
+/* define instructions trial */
 var task1_instructions = {
     type: jsPsychHtmlKeyboardResponse,
-    choices: [" "],
     stimulus: `
   <div style="max-width:800px; margin:auto; line-height:1.3;">
 
@@ -38,10 +174,12 @@ var task1_instructions = {
   of the seeds might be blue and 60% yellow</strong>, while in the <strong>variety B the proportions could be 60% blue and 40% yellow</strong>. During
   the task, the bars on the right will remind you the shares of colors for each corn variety.</p>
 
-  <p>To decide which variety a bag belongs to, you may <strong>randomly draw up to 20 corn seeds</strong> through a little opening in the bag. 
-  You will receive a reward for each label you attach correctly, and no reward for labels attached incorrectly.</p>
+  <p>You can <strong>randomly draw up to 20 corn seeds</strong> from a little hole in the bag to decide which variety it likely belongs to. For each correctly
+  attached label you will win a reward but will get no reward for the labels you attach incorrectly.</p>
+
   <p>Let’s look at an example!</p>
-  <p>Press the <span class="kbd">SPACE</span> bar to proceed.</p>
+
+  <p>Press the <span class="kbd">SPACE</span> bar to proceed</p>
 
   </div>
 
@@ -54,8 +192,7 @@ var task1_instructions = {
   </div>
   `
 };
-
-timeline.push(task1_instructions);
+//timeline.push(task1_instructions);
 
 
 var example_intro = {
@@ -63,15 +200,15 @@ var example_intro = {
     choices: [" "],
     stimulus: `
   <p>Here’s an example of the type of a task you will be doing.</p>
-  <p>Press the <span class="kbd">SPACE</span> bar to proceed.</p>
+  <p>Press the <span class="kbd">SPACE</span> bar to proceed</p>
   `
 };
-
-timeline.push(example_intro);
+//timeline.push(example_intro);
 
 var example_trial = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: `
+
   <div style="max-width:800px; margin:auto; line-height:1.3; padding-bottom:120px;">
 
   <div style="display:flex; align-items:center; gap:20px; margin-top:2px;">
@@ -108,7 +245,7 @@ var example_trial = {
   </div>
 
   <p id="demo_text" style="margin-top: 15px;">
-  For demonstration, press <span class="btn-inline">Draw a seed from the bag</span>
+  For demonstration, let’s see what happens when you press “Draw a seed from the bag”.
   </p>
 
   </div>
@@ -139,7 +276,7 @@ var example_trial = {
 
         drawButton.addEventListener("click", function () {
             if (seedCount >= 2) {
-                document.getElementById("demo_text").innerHTML = `<p>Press <span class="btn-inline">Guess the label now</span> to see what that screen looks like.</p>`;
+                document.getElementById("demo_text").textContent = `Press “Guess the label now” to see what that screen looks like.`;
                 return;
             }
 
@@ -155,15 +292,15 @@ var example_trial = {
             seedArea.appendChild(seedImg);
 
             if (seedCount === 1) {
-                document.getElementById("demo_text").innerHTML =
-                    `<p>The seed you randomly drew from the bag is yellow and it appears at the bottom of the screen.
-        Press <span class="btn-inline">Draw a seed from the bag</span> again to proceed.</p>`;
+                document.getElementById("demo_text").textContent =
+                    `The seed you randomly drew from the bag is yellow and it appears at the bottom of the screen.
+        Press <span class="btn-inline“>Draw a seed from the bag</span> again to proceed.`;
             }
 
             if (seedCount === 2) {
-                document.getElementById("demo_text").innerHTML =
-                    `<p>The second seed you drew randomly from the bag is again yellow, and it appears next to the yellow seed you drew before.
-        Press <span class="btn-inline">Guess the label now</span> to see what that screen looks like.</p>
+                document.getElementById("demo_text").textContent =
+                    `The second seed you drew randomly from the bag is again yellow, and it appears next to the yellow seed you drew before.
+        Press <span class="btn-inline“>Guess the label now</span> to see what that screen looks like.
         `;
             }
         });
@@ -172,13 +309,13 @@ var example_trial = {
             function () {
 
                 if (seedCount < 2) {
-                    document.getElementById("demo_text").innerHTML =
-                        `<p>That's a valid choice for the actual task but for demonstration purposes let’s see what happens when you press
-          <span class="btn-inline">Draw a seed from the bag</span>`;
+                    document.getElementById("demo_text").textContent =
+                        `That's a valid choice for the actual task but for demonstration purposes let’s see what happens when you press
+          “Draw a seed from the bag”`;
                 } else {
 
                     document.getElementById("choice_prompt").textContent =
-                        "Which corn variety is likely to be in this bag based on the seeds you saw? Choose one of the labels to finish this demonstration";
+                        "What corn variety is likely to be in this bag based on the seeds you saw? Choose one of the labels to finish this demonstration";
                     document.getElementById("demo_text").textContent = "";
                     document.getElementById("intro_text").textContent = "";
 
@@ -197,23 +334,21 @@ var example_trial = {
     }
 };
 
-timeline.push(example_trial);
+//timeline.push(example_trial);
 
 var trial_intro_text = {
     type: jsPsychHtmlKeyboardResponse,
-    choices: [" "],
-    stimulus: `Thank you!<br>Remember, in the actual task, you can randomly draw up to 20 seeds before choosing a label.<br><br>
-  You will get a reward for each correctly chosen label, but no reward for incorrectly chosen labels.<br><br>
-  Now let’s move on to the actual task!<br><br>Press the <span class="kbd">SPACE</span> bar to start.`
+    stimulus: `Thank you! Remember, in the actual task, you can randomly draw up to 20 seeds before choosing a label.<br><br>
+  Now let’s move on to the actual task!<br><br>Press the <span class="kbd">SPACE</span> bar to proceed.`
 }
 
-timeline.push(trial_intro_text)
+//timeline.push(trial_intro_text)
+
 
 function makeSeedTrial(config) {
 
     // unpack config with defaults
     const {
-        trial_id,
         gridsImage = null,
         seedImages = {
             yellow: "img/yellow_seed.png",
@@ -223,7 +358,7 @@ function makeSeedTrial(config) {
         seedSequence = ["yellow", "blue", "red", "yellow"],
         labelA = "A",
         labelB = "B",
-        introText = `You know that this bag is.`,
+        introText = `You know that these sacks are.`,
         promptText = `Choose what to do next`,
         finalPromptText = "What variety is this bag of corn seeds? Choose the label."
     } = config;
@@ -231,10 +366,7 @@ function makeSeedTrial(config) {
     return {
         type: jsPsychHtmlKeyboardResponse,
         choices: [],
-        data: {
-            trial_id: trial_id,
-            trial_type: "seed"
-        },
+
         stimulus: `
     <div style="max-width:800px; margin:auto; line-height:1.3; padding-bottom:120px;">
 
@@ -277,21 +409,21 @@ function makeSeedTrial(config) {
 
     </div>
     `,
+
         on_load: function () {
 
             let seedCount = 0;
-            let chosenLabel = null;
-            let guessRT = null;
-            const trialStartTime = performance.now();
+
             const seedArea = document.getElementById("seed-area");
             const drawButton = document.getElementById("draw-btn");
             const guessButton = document.getElementById("guess-btn");
             const promptText = document.getElementById("prompt_text");
 
+            // --- draw behavior ---
             drawButton.addEventListener("click",
                 function () {
                     if (seedCount >= seedSequence.length) {
-                        promptText.innerHTML = `You've reached the maximum number of seeds. Press <span class="btn-inline">Guess the label now</span> to choose a label.`;
+                        promptText.textContent = "You've reached the maximum number of seeds. Press Guess the label now to choose a label.";
                         return;
                     }
                     const color = seedSequence[seedCount];
@@ -299,27 +431,11 @@ function makeSeedTrial(config) {
 
                     seedCount++;
 
-                    promptText.innerHTML = `Drawing a seed...`;
-                    drawButton.disabled = true;
-                    drawButton.style.opacity = 0.6;
-                    drawButton.style.cursor = "default";
-                    setTimeout(() => {
-                        const seedImg = document.createElement("img");
-                        seedImg.src = seedSrc;
-                        seedImg.style.width = "30px";
-                        seedImg.style.margin = "5px";
-                        seedArea.appendChild(seedImg);
-
-                        promptText.innerHTML =
-                            `The seed you drew appears at the bottom of the screen.<br>Choose what to do next.`;
-
-                        // Re-enable button if draws remain
-                        if (seedCount < seedSequence.length) {
-                            drawButton.disabled = false;
-                            drawButton.style.opacity = 1;
-                            drawButton.style.cursor = "pointer";
-                        }
-                    }, 2000);
+                    const seedImg = document.createElement("img");
+                    seedImg.src = seedSrc;
+                    seedImg.style.width = "30px";
+                    seedImg.style.margin = "5px";
+                    seedArea.appendChild(seedImg);
                 });
 
             // --- guess behavior ---
@@ -331,29 +447,19 @@ function makeSeedTrial(config) {
                     drawButton.textContent = labelA;
                     guessButton.textContent = labelB;
 
-                    drawButton.onclick = () => finishTrial(labelA);
-                    guessButton.onclick = () => finishTrial(labelB);
+                    drawButton.onclick = () => jsPsych.finishTrial();
+                    guessButton.onclick = () => jsPsych.finishTrial();
                 });
-            function finishTrial(label) {
-                chosenLabel = label;
-                guessRT = performance.now() - trialStartTime;
-
-                jsPsych.finishTrial({
-                    trial_id: trial_id,
-                    trial_type: "seed",
-                    n_draws: seedCount,
-                    choice: chosenLabel,
-                    decision_rt: guessRT
-                });
-            }
         }
     };
 }
 
+
+
 var trial_conditions = [{
     trial_id: "b75_y05_r20",
     introText: `You know that this bag is either <strong>SHADESEED or SUNMAIZE</strong> variety. <strong>SHADESEED</strong> are about
-  <strong>75% blue and 5% yellow. SUNMAIZE</strong> are the opposite – about <strong>5% blue and 75% yellow.<br>About 20% of all bags are red seeds</strong> - so you can’t
+  <strong>75% blue and 5% yellow. SUNMAIZE</strong> are the opposite – about <strong>5% blue and 75% yellow.<br>About 20% of both bags are red seeds</strong> - so you can’t
   tell varieties apart based on those. <strong>Red seeds don’t give you any information for choosing the right label</strong>.
   `,
     gridsImage: "img/b75_y05_r20.png",
@@ -364,155 +470,107 @@ var trial_conditions = [{
 {
     trial_id: "b70_y10_r20",
     introText: `You know that this bag is either <strong>WAKESOIL or SUNDRIFT</strong> variety. <strong>WAKESOIL</strong> are about
-    <strong>70% yellow and 10% blue. SUNDRIFT</strong> are the opposite – about <strong>10% yellow and 70% blue.<br>About 20% of all bags are red seeds</strong> - so you can’t
+    <strong>70% yellow and 10% blue. SUNDRIFT</strong> are the opposite – about <strong>10% yellow and 70% blue.<br>About 20% of both bags are red seeds</strong> - so you can’t
     tell varieties apart based on those. Red seeds don’t give you any information for choosing the right label.
     `,
     gridsImage: "img/b70_y10_r20.png",
     seedSequence: ["blue", "red", "blue", "red", "blue", "yellow", "blue", "blue", "blue", "blue", "blue", "red", "blue", "blue", "blue", "blue", "yellow", "red", "blue", "blue"],
-    labelA: "WAKESOIL",
-    labelB: "SUNDRIFT"
+    labelA: "Goldgrain",
+    labelB: "Darkstem"
 },
 {
     trial_id: "b15_y65_r20",
     introText: `You know that this bag is either <strong>DEEPSTEM or GOLDLEAF</strong> variety. <strong>DEEPSTEM</strong> are about
-    <strong>65% blue and 15% yellow. GOLDLEAF</strong> are the opposite – about <strong>15% blue and 65% yellow.<br>About 20% of all bags are red seeds</strong> - so you can’t
+    <strong>65% blue and 15% yellow. GOLDLEAF</strong> are the opposite – about <strong>15% blue and 65% yellow.<br>About 20% of both bags are red seeds</strong> - so you can’t
     tell varieties apart based on those. Red seeds don’t give you any information for choosing the right label.
     `,
     gridsImage: "img/b15_y65_r20.png",
     seedSequence: ["yellow", "red", "blue", "yellow", "yellow", "blue", "yellow", "red", "yellow", "yellow", "blue", "yellow", "yellow", "yellow", "yellow", "yellow", "red", "yellow", "yellow", "yellow"],
-    labelA: "DEEPSTEM",
-    labelB: "GOLDLEAF"
+    labelA: "Goldgrain",
+    labelB: "Darkstem"
 },
 {
     trial_id: "b20_y60_r20",
     introText: `You know that this bag is either <strong>TALLGRAIN or WILDLEAF</strong> variety. <strong>TALLGRAIN</strong> are about
-    <strong>20% blue and 60% yellow. WILDLEAF</strong> are the opposite – about <strong>60% blue and 20% yellow.<br>About 20% of all bags are red seeds</strong> - so you can’t
+    <strong>20% blue and 60% yellow. WILDLEAF</strong> are the opposite – about <strong>60% blue and 20% yellow.<br>About 20% of both bags are red seeds</strong> - so you can’t
     tell varieties apart based on those. Red seeds don’t give you any information for choosing the right label.
     `,
     gridsImage: "img/b20_y60_r20.png",
     seedSequence: ["red", "yellow", "blue", "yellow", "red", "red", "yellow", "red", "yellow", "yellow", "yellow", "blue", "red", "yellow", "yellow", "red", "yellow", "yellow", "yellow", "blue"],
-    labelA: "TALLGRAIN",
-    labelB: "WILDLEAF"
+    labelA: "Goldgrain",
+    labelB: "Darkstem"
 },
 {
     trial_id: "b25_y55_r20",
     introText: `You know that this bag is either <strong>FAIRMAIZE or STRONGLEAF</strong> variety. <strong>FAIRMAIZE</strong> are about
-    <strong>55% blue and 25% yellow. STRONGLEAF</strong> are the opposite – about <strong>25% blue and 55% yellow.<br>About 20% of all bags are red seeds</strong> - so you can’t
+    <strong>55% blue and 25% yellow. STRONGLEAF</strong> are the opposite – about <strong>25% blue and 55% yellow.<br>About 20% of both bags are red seeds</strong> - so you can’t
     tell varieties apart based on those. Red seeds don’t give you any information for choosing the right label.
     `,
     gridsImage: "img/b25_y55_r20.png",
     seedSequence: ["red", "yellow", "blue", "yellow", "blue", "yellow", "yellow", "red", "yellow", "blue", "yellow", "yellow", "red", "yellow", "red", "yellow", "yellow", "red", "yellow", "blue"],
-    labelA: "FAIRMAIZE",
-    labelB: "STRONGLEAF"
+    labelA: "Goldgrain",
+    labelB: "Darkstem"
 },
 {
     trial_id: "b50_y30_r20",
     introText: `You know that this bag is either <strong>SUNKERNEL or HARVESTWELL</strong> variety. <strong>SUNKERNEL</strong> are about
-    <strong>30% blue and 50% yellow. HARVESTWELL</strong> are the opposite – about <strong>50% blue and 30% yellow.<br>About 20% of all bags are red seeds</strong> - so you can’t
+    <strong>30% blue and 50% yellow. HARVESTWELL</strong> are the opposite – about <strong>50% blue and 30% yellow.<br>About 20% of both bags are red seeds</strong> - so you can’t
     tell varieties apart based on those. Red seeds don’t give you any information for choosing the right label.
     `,
     gridsImage: "img/b50_y30_r20.png",
     seedSequence: ["yellow", "blue", "red", "blue", "yellow", "blue", "blue", "yellow", "red", "blue", "blue", "yellow", "blue", "blue", "red", "blue", "yellow", "blue", "red", "yellow"],
-    labelA: "SUNKERNEL",
-    labelB: "HARVESTWELL"
+    labelA: "Goldgrain",
+    labelB: "Darkstem"
 },
 {
     trial_id: "b35_y45_r20",
     introText: `You know that this bag is either <strong>PUREGRAIN or MAIZELEAF</strong> variety. <strong>PUREGRAIN</strong> are about
-    <strong>45% blue and 35% yellow. MAIZELEAF</strong> are the opposite – about <strong>35% blue and 45% yellow.<br>About 20% of all bags are red seeds</strong> - so you can’t
+    <strong>45% blue and 35% yellow. MAIZELEAF</strong> are the opposite – about <strong>35% blue and 45% yellow.<br>About 20% of both bags are red seeds</strong> - so you can’t
     tell varieties apart based on those. Red seeds don’t give you any information for choosing the right label.
     `,
     gridsImage: "img/b35_y45_r20.png",
     seedSequence: ["blue", "yellow", "red", "blue", "yellow", "red", "blue", "yellow", "yellow", "blue", "yellow", "yellow", "blue", "yellow", "red", "yellow", "blue", "yellow", "yellow", "yellow"],
-    labelA: "PUREGRAIN",
-    labelB: "MAIZELEAF"
+    labelA: "Goldgrain",
+    labelB: "Darkstem"
 }];
 
 const itiTrial = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: `<div style="font-size:24px; text-align:center;">
-  Thank you<br><br>Next task will start in a second.
+  Preparing next trial…
   </div>`,
     choices: "NO_KEYS",
-    trial_duration: 1500
+    trial_duration: 2000
 };
 
-const sliderQs = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: `
-    <div style="font-size:25px; margin-bottom:15px; max-width:800px">
-    Before moving on, answer a couple of questions <strong>about the choice you just made</strong>.
-    </div>
-    <div class="slider-question">
-      <p>How certain do you feel about your answer?</p>
-      <input type="range" min="0" max="100" value="50" id="conf" class="confidence-slider inactive">
-      <div class="slider-labels">
-        <span>Not certain at all</span>
-        <span>Completely certain</span>
-      </div>
-    </div>
-
-    <div class="slider-question">
-      <p>How unpleasant did it feel to decide about a label in this last task?</p>
-      <input type="range" min="0" max="100" value="50" id="unpl" class="confidence-slider inactive">
-      <div class="slider-labels">
-        <span>Not unpleasant at all</span>
-        <span>Very unpleasant</span>
-      </div>
-    </div>
-
-    <div class="slider-question">
-      <p>At most, how confident could a reasonable person have been in choosing a label in this last task?</p>
-      <input type="range" min="0" max="100" value="50" id="conf_reas" class="confidence-slider inactive">
-      <div class="slider-labels">
-        <span>Not confident at all</span>
-        <span>Completely confident</span>
-      </div>
-    </div>
-  `,
-    choices: ["Continue"],
-    on_load: function () {
-        const touched = { conf: true, unpl: true, conf_reas: true };
-        const responses = {};
-        document.querySelector(".jspsych-btn").disabled = true;
-        document.querySelectorAll(".confidence-slider").forEach(slider => {
-            slider.addEventListener("input", () => {
-                slider.classList.remove("inactive");
-                touched[slider.id] = true;
-                responses[slider.id] = slider.value;
-                if (Object.values(touched).every(Boolean)) {
-                    document.querySelector(".jspsych-btn").disabled = false;
-                }
-            });
-        });
-        this.responses = responses;
-    },
-    on_finish: function (data) {
-        const lastTrial = jsPsych.data.get().last(2).values()[0];
-        data.trial_type = "ratings";
-        data.seed_trial_id = lastTrial.trial_id;
-        data.confidence = this.responses.conf;
-        data.unpleasantness = this.responses.unpl;
-        data.confidence_reasonable = this.responses.conf_reas;
+const confidenceSlider = {
+    type: jsPsychHtmlSliderResponse,
+    stimulus: "How certain are you about your choice?",
+    min: 0,
+    max: 100,
+    start: null,
+    step: 1,
+    labels: ["Not certain at all", "Completely certain"],
+    require_movement: true,
+    data: {
+        question: "confidence"
     }
 };
 
-const randomized_conditions =
-    jsPsych.randomization.shuffle(trial_conditions);
 
-/*randomized_conditions.forEach(cond => {
-    timeline.push(makeSeedTrial(cond));
-    timeline.push(sliderQs);
-    timeline.push(itiTrial);
-});*/
+//trial_conditions.forEach(cond => {
+//  timeline.push(makeSeedTrial(cond));
+//  timeline.push(confidenceSlider);
+//  timeline.push(itiTrial);
+//});
 
 var task2_intro = {
     type: jsPsychHtmlKeyboardResponse,
-    choices: [" "],
+    choices: "ALL_KEYS",
     response_ends_trial: false,
     stimulus: `
   <div style="text-align:center; font-size:20px;">
-  <div id="gen-prompt">Now we need your help with a different task!<br><br>You will use a random number generator in this task.<br>Press the button below twice to try it out.</div>
+  <div id="gen-prompt">Now you will play a different game!<br><br>You will use a random number generator in this game.<br>Press the button below to try it out first.</div>
   <button style="margin-top:30px" id="reveal-btn" class="gen-btn" aria-label="Reveal numbers"></button>
   <div style="margin-top:30px; display:flex; justify-content:center; gap:20px;">
 
@@ -525,9 +583,10 @@ var task2_intro = {
   `,
     on_load: function () {
         let pressCount = 0;
+
         const sets = [
-            [1, 5, 12], // first reveal
-            [3, 2, 2] // second reveal
+            [12, 47, 83], // first reveal
+            [5, 29, 64] // second reveal
         ];
 
         const boxes = [
@@ -541,6 +600,7 @@ var task2_intro = {
         btn.addEventListener("click",
             () => {
                 if (pressCount >= 2) return;
+
                 const currentSet = sets[pressCount];
 
                 boxes.forEach((box, i) => {
@@ -548,10 +608,6 @@ var task2_intro = {
                 });
 
                 pressCount++;
-                if (pressCount === 1) {
-                    promptText.innerHTML =
-                        `Press the button again to see a different set of random numbers.`;
-                };
 
                 if (pressCount === 2) {
                     btn.disabled = true;
@@ -559,27 +615,21 @@ var task2_intro = {
                     btn.style.cursor = "default";
 
                     promptText.innerHTML =
-                        `Great, now press the <span class="kbd">SPACE</span> bar to proceed to the task.`;
+                        `Great, now press the <span class="kbd">SPACE</span> to proceed to the task.`;
 
-                    // Make sure SPACE doesn't "click" the focused button
-                    btn.blur();
-
-                    const onSpace = (e) => {
-                        if (e.code === "Space" || e.key === " ") {
-                            e.preventDefault();
-                            document.removeEventListener("keydown", onSpace);
-                            jsPsych.finishTrial();
+                    document.addEventListener(
+                        "keydown",
+                        () => jsPsych.finishTrial(),
+                        {
+                            once: true
                         }
-                    };
-
-                    document.addEventListener("keydown", onSpace);
+                    );
                 }
             });
     }
 };
 
 timeline.push(task2_intro)
-
 
 var task2_instructions = {
     type: jsPsychHtmlKeyboardResponse,
@@ -603,13 +653,13 @@ var task2_instructions = {
   rule, click <span class="btn-inline">guess the rule</span> at the bottom right.
   </p>
   <p>
-  Press the <span class="kbd">SPACE</span> bar to proceed.
+  Press the <span class="kbd">SPACE</span> bar to start.
   </p>
   </div>
   `
 };
 
-//timeline.push(task2_instructions)
+timeline.push(task2_instructions)
 
 var task2_trial_intro = {
     type: jsPsychHtmlKeyboardResponse,
@@ -646,6 +696,7 @@ var task2_trial_intro = {
   Test the robot
   </button>
   `,
+
 
     on_load: function () {
         let pressCount = 0;
@@ -714,9 +765,10 @@ var task2_trial_intro = {
     }
 };
 
-//timeline.push(task2_trial_intro)
+timeline.push(task2_trial_intro)
 
-var task2_alt_instruction = {
+
+var task2_trial = {
     type: jsPsychHtmlKeyboardResponse,
     choices: [],
 
@@ -727,7 +779,7 @@ var task2_alt_instruction = {
   <div style="
   text-align:center;
   margin-bottom:20px;
-  ">Let's try it out first.</div>
+  ">Now it’s your turn to figure out the rule.</div>
   <div style="
   text-align:center;
   margin-bottom:20px;
@@ -757,13 +809,13 @@ var task2_alt_instruction = {
   <img src="img/rob_deact.png" id="robot-img" alt="Robot">
 
   <div class="robot-num-box" id="box1">
-  <input type="number" class="robot-input" min="1">
+  <input type="number" class="robot-input">
   </div>
   <div class="robot-num-box" id="box2">
-  <input type="number" class="robot-input" min="1">
+  <input type="number" class="robot-input">
   </div>
   <div class="robot-num-box" id="box3">
-  <input type="number" class="robot-input" min="1"> 
+  <input type="number" class="robot-input">
   </div>
   </div>
 
@@ -821,8 +873,7 @@ var task2_alt_instruction = {
   </button>
   `,
     on_load: function () {
-        const testedSets = [];
-        const t2TrialStartTime = [];
+
         const inputs = Array.from(
             document.querySelectorAll(".robot-input")
         );
@@ -834,28 +885,6 @@ var task2_alt_instruction = {
         const robotImg = document.getElementById("robot-img");
         const resultText = document.getElementById("result-text");
 
-        function renderTestedSet(numbers, result) {
-            const row = document.createElement("div");
-            row.style.display = "flex";
-            row.style.justifyContent = "space-between";
-            row.style.marginBottom = "6px";
-
-            row.innerHTML = `
-    <span>${numbers.join(" – ")}</span>
-    <span style="font-weight:bold;">${result ? "Yes" : "No"}</span>
-  `;
-
-            testedSetsDiv.appendChild(row);
-        }
-
-
-        const initialSet = {
-            numbers: [2, 4, 6],
-            theory: "Given example",
-            result: "yes"
-        };
-        testedSets.push(initialSet);
-        renderTestedSet(initialSet.numbers, true);
         // --- enable test button only when all inputs have values ---
         function checkInputsFilled() {
             const allNumbersFilled = inputs.every(inp => inp.value !== "");
@@ -874,7 +903,7 @@ var task2_alt_instruction = {
         // --- test robot logic ---
         testBtn.addEventListener("click", () => {
             const values = inputs.map(inp => Number(inp.value));
-            const theoryText = theoryInput.value.trim();
+
             const isAscending =
                 values[0] < values[1] && values[1] < values[2];
 
@@ -886,254 +915,33 @@ var task2_alt_instruction = {
                 robotImg.src = "img/rob_deact.png";
                 resultText.textContent = "This set does not fit the robot's rule";
             }
-            testedSets.push({
-                numbers: values,
-                theory: theoryText,
-                result: isAscending ? "yes" : "no"
-            });
+
             // --- add entry to tested sets column ---
-
-            renderTestedSet(values, isAscending);
-
-            // --- RESET inputs for next test ---
-            setTimeout(() => {
-                inputs.forEach(inp => inp.value = "");
-                theoryInput.value = "";
-                robotImg.src = "img/rob_deact.png";
-                resultText.textContent = "";
-                checkInputsFilled();
-            }, 2000);
-        });
-        guessBtn.addEventListener("click",
-            () => {
-                const decisionTime = performance.now() - trialStartTime;
-
-                jsPsych.finishTrial({
-                    trial_type: "rule_task",
-                    tested_sets: testedSets,
-                    n_tests: testedSets.length,
-                    rule_guess_rt: decisionTime
-                });
-            });
-    }
-};
-
-var task2_trial = {
-    type: jsPsychHtmlKeyboardResponse,
-    choices: [],
-
-    stimulus: `
-  <div style="max-width:1000px; margin:0 auto;">
-
-  <!-- TOP: centered instruction text -->
-  <div style="
-  text-align:center;
-  margin-bottom:20px;
-">
-  Now it’s your turn to figure out the rule. To test a set:
-</div>
-
-<ul style="
-  list-style-position: inside;
-  text-align: center;
-  max-width: 500px;
-  margin: 0 auto 20px auto;
-  padding: 0;
-">
-  <li>
-    Put in three numbers in the robot's dials.
-  </li>
-  <li>
-    Briefly explain why you are testing that set.
-  </li>
-  <li>
-    Press <span class="btn-inline">Test the robot</span> to see if that set activates the robot.
-  </li>
-  </ul>
-  <div style="
-  text-align:center;
-  margin-bottom:20px;
-">
- All previously tested sets and results will appear on the left. <strong>When you feel very confident about the rule</strong>, press
-    <span class="btn-inline">Guess the rule</span> to submit your guess.
-</div>
-
-  <!-- THREE-COLUMN LAYOUT -->
-  <div style="display:flex; gap:40px; align-items:flex-start; justify-content:center;">
-
-  <!-- LEFT: tested sets -->
-  <div id="tested-sets"
-  style="
-  min-width:220px;
-  font-family: monospace;
-  font-size:16px;
-  ">
-  <div style="font-weight:bold; margin-bottom:10px;">
-  Tested sets
-  </div>
-  </div>
-
-  <!-- CENTER: robot -->
-  <div class="robot-container">
-  <img src="img/rob_deact.png" id="robot-img" alt="Robot">
-
-  <div class="robot-num-box" id="box1">
-  <input type="number" class="robot-input" min="1">
-  </div>
-  <div class="robot-num-box" id="box2">
-  <input type="number" class="robot-input" min="1">
-  </div>
-  <div class="robot-num-box" id="box3">
-  <input type="number" class="robot-input" min="1"> 
-  </div>
-  </div>
-
-  <!-- RIGHT: theory input -->
-  <div style="min-width:260px;">
-  <div style="font-weight:bold; margin-bottom:6px;">
-  Why are you testing this set?
-  </div>
-  <textarea
-  id="theory-input"
-  placeholder="Write the rule you have in mind here"
-  style="
-  width:100%;
-  height:120px;
-  font-size:14px;
-  padding:8px;
-  resize:none;
-  "></textarea>
-  </div>
-
-  </div>
-  </div>
-
- <div id="result-text"
-  style="margin-bottom:30px; font-size:20px; text-align:center;">
-  </div>
-
-  <button
-  id="test-robot-btn"
-  disabled
-  style="
-  position: fixed;
-  bottom: 250px;
-  right: 350px;
-  padding: 12px 18px;
-  font-size: 16px;
-  opacity: 0.5;
-  cursor: default;
-  ">
-  Test the robot
-  </button>
-
-  
-  <button
-  id="guess-rule-btn"
-  style="
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  padding: 12px 18px;
-  font-size: 16px;
-  cursor: pointer;
-  ">
-  Guess the rule
-  </button>
-  `,
-    on_load: function () {
-        const testedSets = [];
-        const t2TrialStartTime = [];
-        const inputs = Array.from(
-            document.querySelectorAll(".robot-input")
-        );
-        const testedSetsDiv = document.getElementById("tested-sets");
-        const theoryInput = document.getElementById("theory-input");
-
-        const testBtn = document.getElementById("test-robot-btn");
-        const guessBtn = document.getElementById("guess-rule-btn")
-        const robotImg = document.getElementById("robot-img");
-        const resultText = document.getElementById("result-text");
-
-        function renderTestedSet(numbers, result) {
             const row = document.createElement("div");
             row.style.display = "flex";
             row.style.justifyContent = "space-between";
             row.style.marginBottom = "6px";
 
-            row.innerHTML = `
-    <span>${numbers.join(" – ")}</span>
-    <span style="font-weight:bold;">${result ? "Yes" : "No"}</span>
-  `;
+            const numbersSpan = document.createElement("span");
+            numbersSpan.textContent = values.join(" – ");
 
+            const resultSpan = document.createElement("span");
+            resultSpan.textContent = isAscending ? "Yes" : "No";
+            resultSpan.style.fontWeight = "bold";
+
+            row.appendChild(numbersSpan);
+            row.appendChild(resultSpan);
             testedSetsDiv.appendChild(row);
-        }
-
-
-        const initialSet = {
-            numbers: [2, 4, 6],
-            theory: "Given example",
-            result: "yes"
-        };
-        testedSets.push(initialSet);
-        renderTestedSet(initialSet.numbers, true);
-        // --- enable test button only when all inputs have values ---
-        function checkInputsFilled() {
-            const allNumbersFilled = inputs.every(inp => inp.value !== "");
-            const theoryFilled = theoryInput.value.trim() !== "";
-            const canTest = allNumbersFilled && theoryFilled;
-            testBtn.disabled = !canTest;
-            testBtn.style.opacity = canTest ? 1 : 0.5;
-            testBtn.style.cursor = canTest ? "pointer" : "default";
-        }
-
-        inputs.forEach(inp => {
-            inp.addEventListener("input", checkInputsFilled);
-        });
-        theoryInput.addEventListener("input", checkInputsFilled);
-
-        // --- test robot logic ---
-        testBtn.addEventListener("click", () => {
-            const values = inputs.map(inp => Number(inp.value));
-            const theoryText = theoryInput.value.trim();
-            const isAscending =
-                values[0] < values[1] && values[1] < values[2];
-
-            // update robot + result text
-            if (isAscending) {
-                robotImg.src = "img/rob_act.png";
-                resultText.textContent = "This set fits the robot's rule!";
-            } else {
-                robotImg.src = "img/rob_deact.png";
-                resultText.textContent = "This set does not fit the robot's rule";
-            }
-            testedSets.push({
-                numbers: values,
-                theory: theoryText,
-                result: isAscending ? "yes" : "no"
-            });
-            // --- add entry to tested sets column ---
-
-            renderTestedSet(values, isAscending);
 
             // --- RESET inputs for next test ---
-            setTimeout(() => {
-                inputs.forEach(inp => inp.value = "");
-                theoryInput.value = "";
-                robotImg.src = "img/rob_deact.png";
-                resultText.textContent = "";
-                checkInputsFilled();
-            }, 2500);
+            inputs.forEach(inp => inp.value = "");
+            theoryInput.value = "";
+            checkInputsFilled();
         });
         guessBtn.addEventListener("click",
             () => {
-                const decisionTime = performance.now() - t2TrialStartTime;
-
                 jsPsych.finishTrial({
-                    trial_type: "rule_task",
-                    tested_sets: testedSets,
-                    n_tests: testedSets.length,
-                    rule_guess_rt: decisionTime
+                    tested_sets: testedSetsDiv.textContent
                 });
             });
     }
@@ -1163,7 +971,7 @@ var submit_rule = {
   style="
   position: fixed;
   bottom: 200px;
-  right: 200px;
+  right: 2000px;
   padding: 12px 18px;
   font-size: 16px;
   opacity: 0.5;
@@ -1193,270 +1001,22 @@ var submit_rule = {
 
 timeline.push(submit_rule)
 
-const rule_conf = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: `
-    <div class="slider-question">
-      <p>How certain are you that your rule correctly explains how this robot operates?</p>
-      <input type="range" min="0" max="100" value="50" id="cert" class="confidence-slider inactive">
-      <div class="slider-labels">
-        <span>Not certain at all</span>
-        <span>Completely certain</span>
-      </div>
-    </div>
-  `,
-    choices: ["Continue"],
-    on_load: function () {
-        const btn = document.querySelector(".jspsych-btn");
-        const slider = document.getElementById("cert");
-        btn.disabled = true;
-
-        this.rule_certainty = null;
-
-        slider.addEventListener("input", () => {
-            slider.classList.remove("inactive");
-            btn.disabled = false;
-            this.rule_certainty = Number(slider.value);
-        });
-    },
-    on_finish: function (data) {
-        data.trial_type = "rule_cert_rating";
-        data.rule_certainty = this.rule_certainty;
-    }
-};
-
-timeline.push(rule_conf)
-
-var submit_alt_rule = {
-    type: jsPsychHtmlKeyboardResponse,
-    response_ends_trial: false,
-    stimulus: `
-  <p>Thank you for submitting the rule!<br>In the boxes below, please provide as many alterntive rules as you can.<br>
-  What else could have been the robot's rule?</p>
-  <div>
- <div id="alt-rules">
-  ${[1, 2, 3, 4, 5, 6].map(i => `
-    <input
-      type="text"
-      class="alt-rule-input"
-      placeholder="Alternative rule ${i}"
-      style="
-        width:500px;
-        font-size:14px;
-        padding:8px;
-        margin-bottom:10px;
-      "
-    />
-  `).join("")}
-</div>
-  </div>
-  <button
-  id="submit-rule-btn"
-  disabled
-  style="
-  position: fixed;
-  bottom: 200px;
-  right: 200px;
-  padding: 12px 18px;
-  font-size: 16px;
-  opacity: 0.5;
-  cursor: default;
-  ">
-  Submit
-  </button>
-  `,
-    on_load: function () {
-        const subBtn = document.getElementById("submit-rule-btn");
-        const ruleInputs = Array.from(
-            document.querySelectorAll(".alt-rule-input")
-        );
-
-        function checkInput() {
-            const anyFilled = ruleInputs.some(inp => inp.value.trim() !== "");
-            subBtn.disabled = !anyFilled;
-            subBtn.style.opacity = anyFilled ? 1 : 0.5;
-            subBtn.style.cursor = anyFilled ? "pointer" : "default";
-        }
-
-        ruleInputs.forEach(inp =>
-            inp.addEventListener("input", checkInput)
-        );
-
-        checkInput();
-
-        subBtn.addEventListener("click", () => {
-            const alternative_rules = ruleInputs
-                .map(inp => inp.value.trim())
-                .filter(v => v !== "");
-
-            jsPsych.finishTrial({
-                alternative_rules: alternative_rules
-            });
-        });
-    }
-}
-
-timeline.push(submit_alt_rule)
-
-var att_check = {
-    type: jsPsychSurvey,
-
-    survey_json: {
-        completeText: "Continue",
-        pages: [
-            {
-                elements: [
-                    {
-                        type: "html",
-                        name: "att_check_instructions",
-                        html: `
-              <p><strong>What is your favorite hobby?</strong><br><br>
-              In psychology studies, researchers are sometimes interested in participants' personal preferences,
-              such as hobbies. In this question, instead of asking about your hobbies, we want to make sure that
-              you are taking the time to read the questions in their entirety. If not, the results of our study
-              would not be reliable or useful for answering our research questions. Therefore, please select the
-              option "Other" among the responses below and write "I have read this" to indicate that you are paying attention.</p>
-              `
-                    },
-                    {
-                        type: "radiogroup",
-                        name: "att_check",
-                        title: " ",
-                        choices: ["Cooking", "Running", "Listening to music", "Watching TV/movies"],
-                        showOtherItem: true,
-                        isRequired: true,
-                        otherPlaceholder: "Type your response here"
-                    }
-                ]
-            }
-        ]
-    },
-
-    on_finish: function (data) {
-        const response = data.response.att_check;
-        const otherText = data.response["att_check-Other"];
-
-        data.attention_passed =
-            response === "Other" &&
-            otherText &&
-            otherText.trim().toLowerCase() === "i have read this";
-    }
-};
-
-timeline.push(att_check)
-
-var scales_intro = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: `<p>Thank you for completing the task. Your final reward amount is being calculated. <br>
-    Please answer some survey questions before finishing the study.<br>
-    Press the <span class="kbd">SPACE</span> bar to proceed</p>`,
-    choices: [" "]
-}
-
-timeline.push(scales_intro)
-
-const char = [
-    "Not at all characteristic of me",
-    "",
-    "",
-    "",
-    "Entirely characteristic of me"
+const agreementScale = [
+    "Strongly disagree",
+    "Disagree",
+    "Neither agree nor disagree",
+    "Agree",
+    "Strongly agree"
 ];
 
 const ius = [
-    "Unforeseen events upset me greatly.",
-    "It frustrates me not having all the information I need.",
-    "One should always look ahead so as to avoid surprises.",
-    "A small, unforeseen event can spoil everything, even with the best of planning.",
-    "I always want to know what the future has in store for me.",
-    "I can’t stand being taken by surprise.",
-    "I should be able to organize everything in advance.",
-    "Uncertainty keeps me from living a full life.",
-    "When it’s time to act, uncertainty paralyses me.",
-    "When I am uncertain I can’t function very well.",
-    "The smallest doubt can stop me from acting.",
-    "I must get away from all uncertain situations."
+    "I am confident that I discovered the correct rule.",
+    "The robot’s behavior was easy to understand.",
+    "I tested numbers systematically.",
+    "I felt uncertain during the task."
 ];
 
-var ius_scale = {
-    type: jsPsychSurveyLikert,
-    preamble: `<p style="font-size: 20px; max-width: 800px"><strong>These statements describe how people may react to the uncertainties of life.<br>
-    Please use the scale below to describe to what extent each item is characteristic of you.</strong></p>`,
-    questions: ius.map(item => ({
-        prompt: item,
-        labels: char,
-        required: false
-    })),
-    css_classes: ["narrow-likert"]
-}
-
-timeline.push(ius_scale)
-
-const reg_strat = [
-    "I keep myself from getting distracted by other thoughts or activities.",
-    "I focus on dealing with this problem, and if necessary let other things slide a little.",
-    "I try hard to prevent other things from interfering with my efforts at dealing with this.",
-    "I put aside other activities in order to concentrate on this.", //Planning
-    "I make a plan of action.",
-    "I try to come up with a strategy about what to do.",
-    "I think about how I might best handle the problem.", //planning
-    "I think hard about what steps to take.", //Active coping
-    "I concentrate my efforts on doing something about it.",
-    "I take additional action to try to get rid of the problem.",
-    "I take direct action to get around the problem.",
-    "I do what has to be done, one step at a time.", //active coping
-    "I turn to work or other substitute activities to take my mind off things", //avoidance
-    "I daydream about things other than this",
-    "I sleep more than usual",
-    "I go to movies or watch TV, to think about it less",
-    "I pretend that it hasn't really happened.",
-    "I pretend that it hasn't really happened.", //avoidance
-    "I think about how I feel about what I have experienced", //rumination taken from CERQ(-often)
-    "I am preoccupied with what I think and feel about what I have experienced",
-    "I want to understand why I feel the way I do about what I have experienced",
-    "I dwell upon the feelings the situation has evoked in me"
-]
-
-const how_often = [
-    "I usually don't do this at all",
-    "",
-    "",
-    "I usually do this a lot"
-]
-
-var reg_scale = {
-    type: jsPsychSurveyLikert,
-    preamble: `<p style="font-size: 20px; max-width: 800px"><strong>Please indicate how often you engage in the 
-    following ways of thinking or behavior when facing stressful situations.</strong></p>`,
-    questions: reg_strat.map(item => ({
-        prompt: item,
-        labels: how_often,
-        required: false
-    })),
-    css_classes: ["narrow-likert"]
-}
-
-timeline.push(reg_scale)
-
-var end_screen = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: `<p>Thank you for completing the study! Your final reward amount is 7.5$. Press <span class="btn-inline">Submit</span>
-    to submit your response.</p>`,
-    choices: ["Submit"]
-}
-
-timeline.push(end_screen)
-
-var redirect_back = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: `<p>Thank you for completing the study! Your final reward amount is 7.5$. Press <span class="btn-inline">Submit</span>
-    to submit your response.</p>`,
-    choices: ["Submit"],
-    on_finish: function () {
-        window.location.href =
-            "https://youruni.qualtrics.com/jfe/form/SV_XXXXXXXXXX?finished=1";
-    }
-};
 
 
+/* start the experiment */
 jsPsych.run(timeline);
