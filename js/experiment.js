@@ -4,9 +4,7 @@ var jsPsych = initJsPsych({
     }
 });
 
-
 var timeline = [];
-
 
 var welcome = {
     type: jsPsychHtmlKeyboardResponse,
@@ -14,7 +12,6 @@ var welcome = {
     stimulus: "Welcome to the study!<br><br>Press the <span class=kbd>SPACE</span> bar to begin."
 };
 timeline.push(welcome);
-
 
 var task1_instructions = {
     type: jsPsychHtmlKeyboardResponse,
@@ -1392,51 +1389,82 @@ var ius_scale = {
 
 timeline.push(ius_scale)
 
-const reg_strat = [
-    "I keep myself from getting distracted by other thoughts or activities.",
-    "I focus on dealing with this problem, and if necessary let other things slide a little.",
-    "I try hard to prevent other things from interfering with my efforts at dealing with this.",
-    "I put aside other activities in order to concentrate on this.", //Planning
-    "I make a plan of action.",
-    "I try to come up with a strategy about what to do.",
-    "I think about how I might best handle the problem.", //planning
-    "I think hard about what steps to take.", //Active coping
-    "I concentrate my efforts on doing something about it.",
-    "I take additional action to try to get rid of the problem.",
-    "I take direct action to get around the problem.",
-    "I do what has to be done, one step at a time.", //active coping
-    "I turn to work or other substitute activities to take my mind off things", //avoidance
-    "I daydream about things other than this",
-    "I sleep more than usual",
-    "I go to movies or watch TV, to think about it less",
-    "I pretend that it hasn't really happened.",
-    "I pretend that it hasn't really happened.", //avoidance
-    "I think about how I feel about what I have experienced", //rumination taken from CERQ(-often)
-    "I am preoccupied with what I think and feel about what I have experienced",
-    "I want to understand why I feel the way I do about what I have experienced",
-    "I dwell upon the feelings the situation has evoked in me"
+const reg_strat_1 = [
+    { id: "PRG_1", subscale: "Positive reinterpretation and growth", text: "I try to grow as a person as a result of the experience." },
+    { id: "MD_1", subscale: "Mental disengagement", text: "I turn to work or other substitute activities to take my mind off things." },
+    { id: "AC_1", subscale: "Active coping", text: "I concentrate my efforts on doing something about it." },
+    { id: "D_1", subscale: "Denial", text: `I say to myself "this isn't real."` },
+    { id: "BD_1", subscale: "Behavioral disengagement", text: "I admit to myself that I can't deal with it, and quit trying." },
+    { id: "MD_2", subscale: "Mental disengagement", text: "I daydream about things other than this." },
+    { id: "P_1", subscale: "Planning", text: "I make a plan of action." },
+    { id: "BD_2", subscale: "Behavioral disengagement", text: "I just give up trying to reach my goal." },
+    { id: "AC_2", subscale: "Active coping", text: "I take additional action to try to get rid of the problem." },
+    { id: "D_2", subscale: "Denial", text: "I refuse to believe that it has happened." },
+    { id: "PRG_2", subscale: "Positive reinterpretation and growth", text: "I try to see it in a different light, to make it seem more positive." },
+    { id: "MD_3", subscale: "Mental disengagement", text: "I sleep more than usual." },
+    { id: "P_2", subscale: "Planning", text: "I try to come up with a strategy about what to do." }
+]
+
+const reg_strat_2 = [
+    { id: "BD_3", subscale: "Behavioral disengagement", text: "I give up the attempt to get what I want." },
+    { id: "PRG_3", subscale: "Positive reinterpretation and growth", text: "I look for something good in what is happening." },
+    { id: "P_3", subscale: "Planning", text: "I think about how I might best handle the problem." },
+    { id: "D_3", subscale: "Denial", text: "I pretend that it hasn't really happened." },
+    { id: "MD_4", subscale: "Mental disengagement", text: "I go to movies or watch TV, to think about it less." },
+    { id: "AC_3", subscale: "Active coping", text: "I take direct action to get around the problem." },
+    { id: "BD_4", subscale: "Behavioral disengagement", text: "I reduce the amount of effort I'm putting into solving the problem." },
+    { id: "P_4", subscale: "Planning", text: "I think hard about what steps to take." },
+    { id: "D_4", subscale: "Denial", text: "I act as though it hasn't even happened." },
+    { id: "AC_4", subscale: "Active coping", text: "I do what has to be done, one step at a time." },
+    { id: "PRG_4", subscale: "Positive reinterpretation and growth", text: "I learn something from the experience." },
+    { id: "CERQ_1", subscale: "Rumination", text: "I often think about how I feel about what I have experienced." },
+    { id: "CERQ_2", subscale: "Rumination", text: "I am preoccupied with what I think and feel about what I have experienced." },
+    { id: "CERQ_3", subscale: "Rumination", text: "I want to understand why I feel the way I do about what I have experienced." },
+    { id: "CERQ_4", subscale: "Rumination", text: "I dwell upon the feelings the situation has evoked in me." }
 ]
 
 const how_often = [
     "I usually don't do this at all",
-    "",
-    "",
+    "I usually do this a little bit",
+    "I usually do this a medium amount",
     "I usually do this a lot"
 ]
 
-var reg_scale = {
+var reg_scale_1 = {
     type: jsPsychSurveyLikert,
     preamble: `<p style="font-size: 20px; max-width: 800px"><strong>Please indicate how often you engage in the 
     following ways of thinking or behavior when facing stressful situations.</strong></p>`,
-    questions: reg_strat.map(item => ({
-        prompt: item,
+    questions: reg_strat_1.map(item => ({
+        prompt: item.text,
+        name: item.id,
         labels: how_often,
         required: false
     })),
-    css_classes: ["narrow-likert"]
+    css_classes: ["narrow-likert"],
+    data: {
+        scale: "coping strategies",
+        item_meta: reg_items.map(({ id, subscale }) => ({ id, subscale }))
+    }
 }
 
-timeline.push(reg_scale)
+timeline.push(reg_scale_1)
+
+var reg_scale_2 = {
+    type: jsPsychSurveyLikert,
+    preamble: `<p style="font-size: 20px; max-width: 800px"><strong>Please indicate how often you engage in the 
+    following ways of thinking or behavior when facing stressful situations.</strong></p>`,
+    questions: reg_strat_2.map(item => ({
+        prompt: item.text,
+        name: item.id,
+        labels: how_often,
+        required: false
+    })),
+    css_classes: ["narrow-likert"],
+    data: {
+        scale: "coping strategies",
+        item_meta: reg_items.map(({ id, subscale }) => ({ id, subscale }))
+    }
+}
 
 var end_screen = {
     type: jsPsychHtmlButtonResponse,
