@@ -19,8 +19,6 @@ var task1_instructions = {
     stimulus: `
   <div style="max-width:800px; margin:auto; line-height:1.3;">
 
-  <img src='img/intro_bags.png' style='width:200px; display:block; margin:8px auto;'>
-
   <div style="display:flex; align-items:center; gap:20px;">
 
   <!-- LEFT COLUMN: -->
