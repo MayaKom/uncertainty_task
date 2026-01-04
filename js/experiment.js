@@ -26,14 +26,14 @@ var task1_instructions = {
   <p style="margin:4px 0; text-align:center;">
   We need your help with a decision task!</p>
 
-  <p>In this task you will be an apprentice working in a barn. Your job is to prepare bags of multicolored corn seeds for sale. However,
-  some of the bags are missing their labels. Your task is to determine which variety of corn seeds is in each bag and attach the correct labels.</p>
+  <p>In this task you are an apprentice working in a barn. Your job is to prepare bags of multicolored corn seeds for sale. However, 
+  some of the bags are missing the labels and now they can't be sold. Your task is to determine which variety of corn seeds is in each bag and attach the correct labels.</p>
 
-  <p>Luckily, each corn variety can be recognized by the proportion of yellow and blue seeds it contains. For example, in <strong>the variety A, 40%
+  <p>The only way you can tell corn varieties apart is the proportion of yellow and blue seeds they contain. For example, in <strong>the variety A, 40%
   of the seeds might be blue and 60% yellow</strong>, while in the <strong>variety B the proportions could be 60% blue and 40% yellow</strong>. During
   the task, the bars on the right will remind you the shares of colors for each corn variety.</p>
 
-  <p>To decide which variety a bag belongs to, you may <strong>randomly draw up to 20 corn seeds</strong> through a little opening in the bag. 
+  <p>The bags are sealed but have small openings in the corner. To to decide which variety a bag belongs to, you may <strong>draw up to 20 corn seeds</strong> through a little opening in the bag. 
   You will receive a reward for each label you attach correctly, and no reward for labels attached incorrectly.</p>
   <p>Let’s look at an example!</p>
   <p>Press the <span class="kbd">SPACE</span> bar to proceed.</p>
@@ -50,7 +50,7 @@ var task1_instructions = {
   `
 };
 
-timeline.push(task1_instructions);
+//timeline.push(task1_instructions);
 
 
 var example_intro = {
@@ -62,7 +62,7 @@ var example_intro = {
   `
 };
 
-timeline.push(example_intro);
+//timeline.push(example_intro);
 
 var example_trial = {
     type: jsPsychHtmlKeyboardResponse,
@@ -192,14 +192,14 @@ var example_trial = {
     }
 };
 
-timeline.push(example_trial);
+//timeline.push(example_trial);
 
 var trial_intro_text = {
     type: jsPsychHtmlKeyboardResponse,
     choices: [" "],
     stimulus: `<p>Thank you!<br><br>Remember, in the actual task, <strong>you can randomly draw up to 20 seeds before choosing a label</strong>.<br><br>
-  You will get a reward for each correctly chosen label, but no reward for incorrect labels.<br><br>
-  Now let’s move on to the actual task!<br><br>Press the <span class="kbd">SPACE</span> bar to start.</p>`
+  You will get a reward for each correctly chosen label, but no reward for incorrect labels.<br><br>You will get feedback on your answers and the amount 
+  of your final reward at the end of the study. Now let’s move on to the actual task!<br><br>Press the <span class="kbd">SPACE</span> bar to start.</p>`
 }
 
 timeline.push(trial_intro_text)
@@ -495,11 +495,11 @@ const sliderQs = {
 const randomized_conditions =
     jsPsych.randomization.shuffle(trial_conditions);
 
-randomized_conditions.forEach(cond => {
+/*randomized_conditions.forEach(cond => {
     timeline.push(makeSeedTrial(cond));
     timeline.push(sliderQs);
     timeline.push(itiTrial);
-});
+});*/
 
 var task2_intro = {
     type: jsPsychHtmlKeyboardResponse,
@@ -690,7 +690,7 @@ var task2_trial_intro = {
                 setTimeout(() => {
                     robotImg.src = "img/rob_act.png";
                     promptText.innerHTML =
-                        `This set fits the robot's rule, so it got activated.<br>Now it’s your turn to test new sets of numbers to guess the rule.<br>Press the <span class="kbd">SPACE</span> bar to start.
+                        `This set fits the robot's rule, so it got activated.<br>Now it’s your turn to test new sets of numbers to guess this robot's rule.<br>Press the <span class="kbd">SPACE</span> bar to start.
           `
                     document.addEventListener(
                         "keydown",
@@ -914,6 +914,23 @@ var task2_alt_instruction = {
     }
 };
 
+// For storing the number sets that participants test
+let task2_testedSets = [];
+
+// Helper function to display those sets anywhere
+function renderTestedSetsHTML(testedSets) {
+    if (!testedSets || testedSets.length === 0) {
+        return `<div style="font-family:monospace;">(No sets tested yet)</div>`;
+    }
+    return testedSets.map(s => `
+    <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-family:monospace; font-size:16px;">
+      <span>${s.numbers.join(" – ")}</span>
+      <span style="font-weight:bold;">${(s.result === "yes") ? "Yes" : "No"}</span>
+    </div>
+  `).join("");
+}
+
+
 var task2_trial = {
     type: jsPsychHtmlKeyboardResponse,
     choices: [],
@@ -922,35 +939,251 @@ var task2_trial = {
   <div style="max-width:1000px; margin:0 auto;">
 
   <!-- TOP: centered instruction text -->
-  <div style="
-  text-align:left;
-  margin-bottom:20px;
-">
-  Now it’s your turn to figure out the rule. To test a set:
+  <div style=" text-align:center; margin: 0 auto 10px auto; max-width:800px">
+  Now you know that 2-4-6 activates the robot. This set appears on the left with "yes" next to it. 
+  Your task is to figure out <strong>the rule</strong> that makes this robot go. To test a set:
 </div>
 
-<ul style="
-  list-style-position: inside;
-  text-align: left;
-  max-width: 500px;
-  margin: 0 auto 20px auto;
-  padding: 0;
-">
-  <li>
-    Put in three numbers in the robot's dials.
-  </li>
-  <li>
-    Briefly explain why you are testing that set.
-  </li>
-  <li>
-    Press <span class="btn-inline">Test the robot</span> to see if that set activates the robot.
-  </li>
+<ul style="list-style-position: inside; text-align: left; max-width: 500px; margin: 0 auto 10px auto; padding: 0;">
+  <li>Put in three numbers in the robot's dials.</li>
+  <li>Briefly explain why you are testing that set.</li>
+  <li>Press <span class="btn-inline">Test the robot</span> to see if that set activates the robot.</li>
   </ul>
-  <div style="
-  text-align:center;
-  margin-bottom:20px;
-">
- All previously tested sets and results will appear on the left. <strong>When you feel very confident about the rule</strong>, press
+  <div style="text-align:center; margin: 0 auto 20px auto; max-width:800px">
+ All previously tested sets and results appear on the left. <strong>When you feel very confident about the rule</strong>, press
+    <span class="btn-inline">Guess the rule</span> to submit your guess.
+</div>
+
+  <!-- THREE-COLUMN LAYOUT -->
+  <div style="display:flex; gap:40px; align-items:flex-start; justify-content:center;">
+
+  <!-- LEFT: tested sets -->
+  <div id="tested-sets"
+  style="
+  min-width:220px;
+  font-family: monospace;
+  font-size:16px;
+  ">
+  <div style="font-weight:bold; margin-bottom:10px;">Tested sets
+  </div>
+  </div>
+
+  <!-- CENTER: robot -->
+  <div class="robot-container">
+  <img src="img/rob_deact.png" id="robot-img" alt="Robot">
+
+  <div class="robot-num-box" id="box1">
+  <input type="number" class="robot-input" min="1">
+  </div>
+  <div class="robot-num-box" id="box2">
+  <input type="number" class="robot-input" min="1">
+  </div>
+  <div class="robot-num-box" id="box3">
+  <input type="number" class="robot-input" min="1"> 
+  </div>
+  </div>
+
+  <!-- RIGHT: theory input -->
+  <div style="min-width:260px;">
+  <div style="font-weight:bold; margin-bottom:6px;">
+  Why are you testing this set?
+  </div>
+  <textarea
+  id="theory-input"
+  placeholder="Write the rule you have in mind here"
+  style="width:100%; height:120px; font-size:14px; padding:8px; resize:none;"></textarea>
+  </div>
+  </div>
+  </div>
+
+ <div id="result-text" style="margin-bottom:30px; font-size:20px; text-align:center;">
+  </div>
+
+  <button id="test-robot-btn" disabled style=" position: fixed; bottom: 250px; right: 350px; padding: 12px 18px; font-size: 16px; opacity: 0.5;
+  cursor: default;">Test the robot</button>
+  
+  <button id="guess-rule-btn" style=" position: fixed; bottom: 30px; right: 30px; padding: 12px 18px; font-size: 16px;
+  cursor: pointer;">Guess the rule</button>
+  `,
+    on_load: function () {
+        const t2TrialStartTime = performance.now();
+        const inputs = Array.from(document.querySelectorAll(".robot-input"));
+        const testedSetsDiv = document.getElementById("tested-sets");
+        const theoryInput = document.getElementById("theory-input");
+
+        const testBtn = document.getElementById("test-robot-btn");
+        const guessBtn = document.getElementById("guess-rule-btn")
+        const robotImg = document.getElementById("robot-img");
+        const resultText = document.getElementById("result-text");
+        function renderAllTestedSets() {
+            testedSetsDiv.innerHTML = `
+      <div style="font-weight:bold; margin-bottom:10px;">Tested sets</div>
+      ${renderTestedSetsHTML(task2_testedSets)}
+    `;
+        }
+        if (task2_testedSets.length === 0) {
+            task2_testedSets.push({
+                numbers: [2, 4, 6],
+                theory: "Given example",
+                result: "yes"
+            });
+        }
+        renderAllTestedSets();
+        // --- enable test button only when all inputs have values ---
+        function checkInputsFilled() {
+            const allNumbersFilled = inputs.every(inp => inp.value !== "");
+            const theoryFilled = theoryInput.value.trim() !== "";
+            const canTest = allNumbersFilled && theoryFilled;
+            testBtn.disabled = !canTest;
+            testBtn.style.opacity = canTest ? 1 : 0.5;
+            testBtn.style.cursor = canTest ? "pointer" : "default";
+        }
+
+        inputs.forEach(inp => { inp.addEventListener("input", checkInputsFilled); });
+        theoryInput.addEventListener("input", checkInputsFilled);
+
+        checkInputsFilled();
+
+        // --- test robot logic ---
+        testBtn.addEventListener("click", () => {
+            const values = inputs.map(inp => Number(inp.value));
+            const theoryText = theoryInput.value.trim();
+            const isAscending =
+                values[0] < values[1] && values[1] < values[2];
+
+            // update robot + result text
+            if (isAscending) {
+                robotImg.src = "img/rob_act.png";
+                resultText.textContent = "This set fits the robot's rule!";
+            } else {
+                robotImg.src = "img/rob_deact.png";
+                resultText.textContent = "This set does not fit the robot's rule";
+            }
+            task2_testedSets.push({
+                numbers: values,
+                theory: theoryText,
+                result: isAscending ? "yes" : "no"
+            });
+            // --- add entry to tested sets column ---
+
+            renderAllTestedSets();
+
+            // --- RESET inputs for next test ---
+            setTimeout(() => {
+                inputs.forEach(inp => inp.value = "");
+                theoryInput.value = "";
+                robotImg.src = "img/rob_deact.png";
+                resultText.textContent = "";
+                checkInputsFilled();
+            }, 2500);
+        });
+        guessBtn.addEventListener("click",
+            () => {
+                const decisionTime = performance.now() - t2TrialStartTime;
+
+                jsPsych.finishTrial({
+                    trial_type: "rule_task",
+                    tested_sets: task2_testedSets,
+                    n_tests: task2_testedSets.length,
+                    rule_guess_rt: decisionTime
+                });
+            });
+    }
+};
+
+timeline.push(task2_trial)
+
+let showed_task2_retry = false;
+
+var submit_rule = {
+    type: jsPsychHtmlKeyboardResponse,
+    choices: "NO_KEYS",
+    response_ends_trial: false,
+    stimulus: () => `
+    <div style="display:flex; gap:40px; align-items:flex-start; justify-content:center; max-width:1000px; margin:0 auto;">
+
+      <div style="min-width:260px;">
+        <div style="font-weight:bold; margin-bottom:10px;">Tested sets</div>
+        <div id="tested-sets-submit">
+          ${renderTestedSetsHTML(task2_testedSets)}
+        </div>
+      </div>
+    
+  <div style="min-width:520px;">
+        <p id="rule-prompt">What rule activates this robot? Write your guess here.</p>
+  <div>
+  <textarea id="rule-input" style=" width:500px; height:200px; font-size:14px; padding:8px; resize:none;"></textarea>
+  </div>
+  <button id="submit-rule-btn" disabled style=" position: fixed; bottom: 150px; right: 150px; padding: 12px 18px; font-size: 16px;
+  opacity: 0.5; cursor: default;">Submit</button>
+   </div>
+
+    </div>
+  `,
+    on_load: function () {
+        const subBtn = document.getElementById("submit-rule-btn");
+        const ruleInput = document.getElementById("rule-input");
+        const rulePrompt = document.getElementById("rule-prompt");
+        function checkInput() {
+            const ruleFilled = ruleInput.value.trim() !== "";
+            subBtn.disabled = !ruleFilled;
+            subBtn.style.opacity = ruleFilled ? 1 : 0.5;
+            subBtn.style.cursor = ruleFilled ? "pointer" : "default";
+        }
+        ruleInput.addEventListener("input", checkInput);
+        subBtn.addEventListener("click",
+            () => {
+                const guess = ruleInput.value.toLowerCase();
+                const evenRule = guess.includes("two") ||
+                    /\b2\b/.test(guess) || guess.includes("even");
+                // Lock UI so they can't keep editing/clicking during the delay
+                subBtn.disabled = true;
+                subBtn.style.opacity = 0.5;
+                subBtn.style.cursor = "default";
+                ruleInput.disabled = true;
+
+                if (evenRule === true && showed_task2_retry == false) {
+                    rulePrompt.innerHTML = `Thank you for submitting your guess.<br>This is not the rule that activates this robot.
+                    You have another chance to try other number sets and guess the rule again.`;
+                    // Wait 3 seconds, then end trial with even_rule=true
+                    setTimeout(() => {
+                        jsPsych.finishTrial({
+                            rule_guess: guess,
+                            even_rule: true
+                        });
+                    }, 8000);
+                } else {
+                    jsPsych.finishTrial({
+                        rule_guess: guess,
+                        even_rule: false
+                    });
+                }
+            });
+    }
+};
+
+timeline.push(submit_rule)
+
+
+var task2_trial2 = {
+    type: jsPsychHtmlKeyboardResponse,
+    choices: [],
+
+    stimulus: `
+  <div style="max-width:1000px; margin:0 auto;">
+
+  <!-- TOP: centered instruction text -->
+  <div style=" text-align:center; margin: 0 auto 10px auto; max-width:800px">
+  Your task is to figure out <strong>the rule</strong> that makes this robot go. To test a set:
+</div>
+
+<ul style="list-style-position: inside; text-align: left; max-width: 500px; margin: 0 auto 10px auto; padding: 0;">
+  <li>Put in three numbers in the robot's dials.</li>
+  <li>Briefly explain why you are testing that set.</li>
+  <li>Press <span class="btn-inline">Test the robot</span> to see if that set activates the robot.</li>
+  </ul>
+  <div style="text-align:center; margin: 0 auto 20px auto; max-width:800px">
+ All previously tested sets and results appear on the left. <strong>When you feel very confident about the rule</strong>, press
     <span class="btn-inline">Guess the rule</span> to submit your guess.
 </div>
 
@@ -992,57 +1225,28 @@ var task2_trial = {
   <textarea
   id="theory-input"
   placeholder="Write the rule you have in mind here"
-  style="
-  width:100%;
-  height:120px;
-  font-size:14px;
-  padding:8px;
-  resize:none;
-  "></textarea>
+  style="width:100%; height:120px; font-size:14px; padding:8px; resize:none;"></textarea>
   </div>
-
   </div>
   </div>
 
- <div id="result-text"
-  style="margin-bottom:30px; font-size:20px; text-align:center;">
+ <div id="result-text" style="margin-bottom:30px; font-size:20px; text-align:center;">
   </div>
 
   <button
-  id="test-robot-btn"
-  disabled
-  style="
-  position: fixed;
-  bottom: 250px;
-  right: 350px;
-  padding: 12px 18px;
-  font-size: 16px;
-  opacity: 0.5;
-  cursor: default;
-  ">
+  id="test-robot-btn" disabled style=" position: fixed; bottom: 250px; right: 350px; padding: 12px 18px; font-size: 16px; opacity: 0.5;
+  cursor: default;  ">
   Test the robot
   </button>
-
   
-  <button
-  id="guess-rule-btn"
-  style="
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  padding: 12px 18px;
-  font-size: 16px;
-  cursor: pointer;
-  ">
+  <button id="guess-rule-btn" style=" position: fixed; bottom: 30px; right: 30px; padding: 12px 18px; font-size: 16px;
+  cursor: pointer;">
   Guess the rule
   </button>
   `,
     on_load: function () {
-        const testedSets = [];
-        const t2TrialStartTime = [];
-        const inputs = Array.from(
-            document.querySelectorAll(".robot-input")
-        );
+        const t2TrialStartTime = performance.now();
+        const inputs = Array.from(document.querySelectorAll(".robot-input"));
         const testedSetsDiv = document.getElementById("tested-sets");
         const theoryInput = document.getElementById("theory-input");
 
@@ -1050,29 +1254,20 @@ var task2_trial = {
         const guessBtn = document.getElementById("guess-rule-btn")
         const robotImg = document.getElementById("robot-img");
         const resultText = document.getElementById("result-text");
-
-        function renderTestedSet(numbers, result) {
-            const row = document.createElement("div");
-            row.style.display = "flex";
-            row.style.justifyContent = "space-between";
-            row.style.marginBottom = "6px";
-
-            row.innerHTML = `
-    <span>${numbers.join(" – ")}</span>
-    <span style="font-weight:bold;">${result ? "Yes" : "No"}</span>
-  `;
-
-            testedSetsDiv.appendChild(row);
+        function renderAllTestedSets() {
+            testedSetsDiv.innerHTML = `
+      <div style="font-weight:bold; margin-bottom:10px;">Tested sets</div>
+      ${renderTestedSetsHTML(task2_testedSets)}
+    `;
         }
-
-
-        const initialSet = {
-            numbers: [2, 4, 6],
-            theory: "Given example",
-            result: "yes"
-        };
-        testedSets.push(initialSet);
-        renderTestedSet(initialSet.numbers, true);
+        if (task2_testedSets.length === 0) {
+            task2_testedSets.push({
+                numbers: [2, 4, 6],
+                theory: "Given example",
+                result: "yes"
+            });
+        }
+        renderAllTestedSets();
         // --- enable test button only when all inputs have values ---
         function checkInputsFilled() {
             const allNumbersFilled = inputs.every(inp => inp.value !== "");
@@ -1083,10 +1278,10 @@ var task2_trial = {
             testBtn.style.cursor = canTest ? "pointer" : "default";
         }
 
-        inputs.forEach(inp => {
-            inp.addEventListener("input", checkInputsFilled);
-        });
+        inputs.forEach(inp => { inp.addEventListener("input", checkInputsFilled); });
         theoryInput.addEventListener("input", checkInputsFilled);
+
+        checkInputsFilled();
 
         // --- test robot logic ---
         testBtn.addEventListener("click", () => {
@@ -1103,14 +1298,14 @@ var task2_trial = {
                 robotImg.src = "img/rob_deact.png";
                 resultText.textContent = "This set does not fit the robot's rule";
             }
-            testedSets.push({
+            task2_testedSets.push({
                 numbers: values,
                 theory: theoryText,
                 result: isAscending ? "yes" : "no"
             });
             // --- add entry to tested sets column ---
 
-            renderTestedSet(values, isAscending);
+            renderAllTestedSets();
 
             // --- RESET inputs for next test ---
             setTimeout(() => {
@@ -1127,67 +1322,27 @@ var task2_trial = {
 
                 jsPsych.finishTrial({
                     trial_type: "rule_task",
-                    tested_sets: testedSets,
-                    n_tests: testedSets.length,
+                    tested_sets: task2_testedSets,
+                    n_tests: task2_testedSets.length,
                     rule_guess_rt: decisionTime
                 });
             });
     }
 };
 
-timeline.push(task2_trial)
+var even_rule_branch = {
+    timeline: [task2_trial2, submit_rule], // let them test more, then guess again
+    conditional_function: function () {
+        const last = jsPsych.data.get().last(1).values()[0];
+        const should_run = (last.even_rule === true) && (showed_task2_retry === false);
+        // If we're about to run it, flip the flag so it can't run again
+        if (should_run) showed_task2_retry = true;
 
-var submit_rule = {
-    type: jsPsychHtmlKeyboardResponse,
-    response_ends_trial: false,
-    stimulus: `
-  <p>What rule activates this robot? Write your guess here.</p>
-  <div>
-  <textarea
-  id="rule-input"
-  style="
-  width:500px;
-  height:200px;
-  font-size:14px;
-  padding:8px;
-  resize:none;
-  "></textarea>
-  </div>
-  <button
-  id="submit-rule-btn"
-  disabled
-  style="
-  position: fixed;
-  bottom: 150px;
-  right: 150px;
-  padding: 12px 18px;
-  font-size: 16px;
-  opacity: 0.5;
-  cursor: default;
-  ">
-  Submit
-  </button>
-  `,
-    on_load: function () {
-        const subBtn = document.getElementById("submit-rule-btn");
-        const ruleInput = document.getElementById("rule-input");
-        function checkInput() {
-            const ruleFilled = ruleInput.value.trim() !== "";
-            subBtn.disabled = !ruleFilled;
-            subBtn.style.opacity = ruleFilled ? 1 : 0.5;
-        }
-        ruleInput.addEventListener("input",
-            checkInput);
-        subBtn.addEventListener("click",
-            () => {
-                jsPsych.finishTrial({
-                    rule_guess: ruleInput.value
-                });
-            })
+        return should_run;
     }
-}
+};
 
-timeline.push(submit_rule)
+timeline.push(even_rule_branch)
 
 const rule_conf = {
     type: jsPsychHtmlButtonResponse,
