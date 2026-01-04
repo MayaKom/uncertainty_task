@@ -84,7 +84,7 @@ var example_trial = {
   }
   </style>
   <p style="margin:5px 0 2px; text-align:center;"><strong>EXAMPLE ONLY</strong></p>
-  <img src='img/bag.png' style='width:1800px; display:block; margin:20px auto;'>
+  <img src='img/bag.png' style='width:180px; display:block; margin:20px auto;'>
 
   <p id="intro_text">You know that this bag is either <strong>LIGHTKERNEL</strong> or <strong>BRIGHTLEAF</strong> variety, but you have no idea which
   one it is. <br><strong>LIGHTKERNEL</strong> seeds are about <strong>78% yellow and 2% blue. <br>BRIGHTLEAF</strong> are the opposite – about <strong>2% yellow
@@ -197,9 +197,9 @@ timeline.push(example_trial);
 var trial_intro_text = {
     type: jsPsychHtmlKeyboardResponse,
     choices: [" "],
-    stimulus: `Thank you!<br>Remember, in the actual task, you can randomly draw up to 20 seeds before choosing a label.<br><br>
+    stimulus: `<p>Thank you!<br><br>Remember, in the actual task, <strong>you can randomly draw up to 20 seeds before choosing a label</strong>.<br><br>
   You will get a reward for each correctly chosen label, but no reward for incorrect labels.<br><br>
-  Now let’s move on to the actual task!<br><br>Press the <span class="kbd">SPACE</span> bar to start.`
+  Now let’s move on to the actual task!<br><br>Press the <span class="kbd">SPACE</span> bar to start.</p>`
 }
 
 timeline.push(trial_intro_text)
@@ -507,7 +507,8 @@ var task2_intro = {
     response_ends_trial: false,
     stimulus: `
   <div style="text-align:center; font-size:20px;">
-  <div id="gen-prompt">Now we need your help with a different task!<br><br>You will use a random number generator in this task.<br>Press the button below twice to try it out.</div>
+  <div id="gen-prompt">Now we need your help with a different task!<br><br>You will use a random number 
+  generator in this task.<br>Press the button below to try it out.</div>
   <button style="margin-top:30px" id="reveal-btn" class="gen-btn" aria-label="Reveal numbers"></button>
   <div style="margin-top:30px; display:flex; justify-content:center; gap:20px;">
 
@@ -922,7 +923,7 @@ var task2_trial = {
 
   <!-- TOP: centered instruction text -->
   <div style="
-  text-align:center;
+  text-align:left;
   margin-bottom:20px;
 ">
   Now it’s your turn to figure out the rule. To test a set:
@@ -1157,8 +1158,8 @@ var submit_rule = {
   disabled
   style="
   position: fixed;
-  bottom: 200px;
-  right: 200px;
+  bottom: 150px;
+  right: 150px;
   padding: 12px 18px;
   font-size: 16px;
   opacity: 0.5;
