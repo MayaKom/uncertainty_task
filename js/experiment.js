@@ -84,7 +84,7 @@ var example_trial = {
   }
   </style>
   <p style="margin:5px 0 2px; text-align:center;"><strong>EXAMPLE ONLY</strong></p>
-  <img src='img/trial_bag.png' style='width:200px; display:block; margin:0 auto;'>
+  <img src='img/bag.png' style='width:200px; display:block; margin:0 auto;'>
 
   <p id="intro_text">You know that this bag is either <strong>LIGHTKERNEL</strong> or <strong>BRIGHTLEAF</strong> variety, but you have no idea which
   one it is. <br><strong>LIGHTKERNEL</strong> seeds are about <strong>78% yellow and 2% blue. <br>BRIGHTLEAF</strong> are the opposite – about <strong>2% yellow
@@ -233,7 +233,7 @@ function makeSeedTrial(config) {
         stimulus: `
     <div style="max-width:800px; margin:auto; line-height:1.3; padding-bottom:120px;">
 
-    <img src='img/trial_bag.png'
+    <img src='img/bag.png'
     style='width:200px; display:block; margin:0 auto;'>
 
     <div style="display:flex; align-items:center; gap:20px;">
