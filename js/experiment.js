@@ -1443,7 +1443,7 @@ var reg_scale_1 = {
     css_classes: ["narrow-likert"],
     data: {
         scale: "coping strategies",
-        item_meta: reg_items.map(({ id, subscale }) => ({ id, subscale }))
+        item_meta: reg_strat_1.map(({ id, subscale }) => ({ id, subscale }))
     }
 }
 
@@ -1462,9 +1462,11 @@ var reg_scale_2 = {
     css_classes: ["narrow-likert"],
     data: {
         scale: "coping strategies",
-        item_meta: reg_items.map(({ id, subscale }) => ({ id, subscale }))
+        item_meta: reg_strat_2.map(({ id, subscale }) => ({ id, subscale }))
     }
 }
+
+timeline.push(reg_scale_2)
 
 var end_screen = {
     type: jsPsychHtmlButtonResponse,
