@@ -198,7 +198,7 @@ var example_trial = {
     }
 };
 
-//timeline.push(example_trial);
+timeline.push(example_trial);
 
 var trial_intro_text = {
     type: jsPsychHtmlKeyboardResponse,
@@ -208,7 +208,7 @@ var trial_intro_text = {
   of your final reward at the end of the study. Now let’s move on to the actual task!<br><br>Press the <span class="kbd">SPACE</span> bar to start.</p>`
 }
 
-//timeline.push(trial_intro_text)
+timeline.push(trial_intro_text)
 
 function makeSeedTrial(config) {
     const {
@@ -501,11 +501,11 @@ const sliderQs = {
 const randomized_conditions =
     jsPsych.randomization.shuffle(trial_conditions);
 
-/*randomized_conditions.forEach(cond => {
+randomized_conditions.forEach(cond => {
     timeline.push(makeSeedTrial(cond));
     timeline.push(sliderQs);
     timeline.push(itiTrial);
-});*/
+});
 
 var task2_intro = {
     type: jsPsychHtmlKeyboardResponse,
@@ -581,8 +581,7 @@ var task2_intro = {
     }
 };
 
-//timeline.push(task2_intro)
-
+timeline.push(task2_intro)
 
 var task2_instructions = {
     type: jsPsychHtmlKeyboardResponse,
@@ -613,7 +612,7 @@ var task2_instructions = {
   `
 };
 
-//timeline.push(task2_instructions)
+timeline.push(task2_instructions)
 
 var task2_trial_intro = {
     type: jsPsychHtmlKeyboardResponse,
@@ -702,7 +701,7 @@ var task2_trial_intro = {
     }
 };
 
-//timeline.push(task2_trial_intro)
+timeline.push(task2_trial_intro)
 
 // For storing the number sets that participants test
 let task2_testedSets = [];
