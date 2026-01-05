@@ -73,11 +73,7 @@ var example_trial = {
 
   <div style="display:flex; align-items:center; gap:20px; margin-top:2px;">
   <!-- LEFT COLUMN -->
-  <div style="flex:1;
-  padding-top:1px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;">
+  <div style="flex:1; padding-top:1px; display:flex; flex-direction:column; justify-content:center;">
   <style>
   #intro_text,
   #choice_prompt,
@@ -128,6 +124,14 @@ var example_trial = {
     choices: [],
 
     on_load: function () {
+        // prevent Space/Enter from activating focused buttons
+        document.addEventListener("keydown", function (e) {
+            if ((e.code === "Space" || e.code === "Enter") &&
+                (document.activeElement && document.activeElement.tagName === "BUTTON")) {
+                e.preventDefault();
+            }
+        }, true);
+
         let seedCount = 0;
 
         const seedArea = document.getElementById("seed-area");
@@ -170,7 +174,7 @@ var example_trial = {
 
                 if (seedCount < 2) {
                     document.getElementById("demo_text").innerHTML =
-                        `<p>That's a valid choice for the actual task but for demonstration purposes let’s see what happens when you press
+                        `<p>That's a valid choice for the actual task, but for demonstration purposes, let’s see what happens when you press
           <span class="btn-inline">Draw a seed from the bag</span>`;
                 } else {
 
@@ -207,8 +211,6 @@ var trial_intro_text = {
 timeline.push(trial_intro_text)
 
 function makeSeedTrial(config) {
-
-    // unpack config with defaults
     const {
         trial_id,
         gridsImage = null,
@@ -241,11 +243,7 @@ function makeSeedTrial(config) {
     <div style="display:flex; align-items:center; gap:20px;">
 
     <!-- LEFT COLUMN: -->
-    <div style="flex:1;
-    padding-top:1px;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;">
+    <div style="flex:1; padding-top:1px; display:flex; flex-direction:column; justify-content:center;">
 
     <div id="intro_text" style="margin-top:0;">
     ${introText}
@@ -275,6 +273,13 @@ function makeSeedTrial(config) {
     </div>
     `,
         on_load: function () {
+            // prevent Space/Enter from activating focused buttons
+            document.addEventListener("keydown", function (e) {
+                if ((e.code === "Space" || e.code === "Enter") &&
+                    (document.activeElement && document.activeElement.tagName === "BUTTON")) {
+                    e.preventDefault();
+                }
+            }, true);
 
             let seedCount = 0;
             let chosenLabel = null;
@@ -284,7 +289,6 @@ function makeSeedTrial(config) {
             const drawButton = document.getElementById("draw-btn");
             const guessButton = document.getElementById("guess-btn");
             const promptText = document.getElementById("prompt_text");
-
             drawButton.addEventListener("click",
                 function () {
                     if (seedCount >= seedSequence.length) {
@@ -361,7 +365,7 @@ var trial_conditions = [{
 {
     trial_id: "b70_y10_r20",
     introText: `You know that this bag is either <strong>WAKESOIL or SUNDRIFT</strong> variety. <strong>WAKESOIL</strong> are about
-    <strong>70% yellow and 10% blue. SUNDRIFT</strong> are the opposite – about <strong>10% yellow and 70% blue.<br>About 20% of all bags are red seeds</strong> - so you can’t
+    <strong>70% blue and 10% yellow. SUNDRIFT</strong> are the opposite – about <strong>10% blue and 70% yellow.<br>About 20% of all bags are red seeds</strong> - so you can’t
     tell varieties apart based on those. Red seeds don’t give you any information for choosing the right label.
     `,
     gridsImage: "img/b70_y10_r20.png",
