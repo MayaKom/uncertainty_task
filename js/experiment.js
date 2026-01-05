@@ -432,7 +432,7 @@ var trial_conditions = [{
 const itiTrial = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: `<div style="font-size:24px; text-align:center;">
-  Thank you<br><br>Next task will start in a second.
+  Thank you.<br><br>Next task will start in a second.
   </div>`,
     choices: "NO_KEYS",
     trial_duration: 1500
@@ -592,7 +592,7 @@ var task2_instructions = {
 
   <p>
   This is a special robot that gets activated when its number dials
-  are set according to a rule.<br>Your task is to figure out the rule that makes this robot go!
+  are set according to a rule.<br><strong>Your task is to figure out the rule that makes this robot go.</strong>
   </p>
   <img src="img/rob_deact.png" style="width: 220px;">
   <p>
@@ -602,9 +602,9 @@ var task2_instructions = {
   </p>
 
   <p>
-  You can test as many number sets as you want within the time limit
-  of 5 minutes. When you feel confident that you have discovered the
-  rule, click <span class="btn-inline">guess the rule</span> at the bottom right.
+  You can test as many number sets as you want. When you feel very confident that you have discovered the
+  rule, click <span class="btn-inline">guess the rule</span> at the bottom right. <strong>You will get a reward only if you guess 
+  the rule correctly</strong>, tests don't generate rewards.
   </p>
   <p>
   Press the <span class="kbd">SPACE</span> bar to proceed.
@@ -730,7 +730,7 @@ var task2_trial = {
 
   <!-- TOP: centered instruction text -->
   <div style=" text-align:center; margin: 0 auto 10px auto; max-width:800px">
-  Now you know that 2-4-6 activates the robot. This set appears on the left with "yes" next to it. 
+  You already know that <span class="btn-inline" style="font-family: Orbitron">2-4-6</span> activates the robot. This set appears on the left with "yes" next to it. 
   Your task is to figure out <strong>the rule</strong> that makes this robot go. To test a set:
 </div>
 
@@ -749,10 +749,7 @@ var task2_trial = {
 
   <!-- LEFT: tested sets -->
   <div id="tested-sets"
-  style="
-  min-width:220px;
-  font-family: monospace;
-  font-size:16px;
+  style=" min-width:220px; font-family: monospace; font-size:16px;
   ">
   <div style="font-weight:bold; margin-bottom:10px;">Tested sets
   </div>
@@ -789,7 +786,7 @@ var task2_trial = {
  <div id="result-text" style="margin-bottom:30px; font-size:20px; text-align:center;">
   </div>
 
-  <button id="test-robot-btn" disabled style=" position: fixed; bottom: 250px; right: 350px; padding: 12px 18px; font-size: 16px; opacity: 0.5;
+  <button id="test-robot-btn" disabled style=" position: fixed; bottom: 200px; right: 350px; padding: 12px 18px; font-size: 16px; opacity: 0.5;
   cursor: default;">Test the robot</button>
   
   <button id="guess-rule-btn" style=" position: fixed; bottom: 30px; right: 30px; padding: 12px 18px; font-size: 16px;
@@ -937,7 +934,7 @@ var submit_rule = {
 
                 if (evenRule === true && showed_task2_retry == false) {
                     rulePrompt.innerHTML = `Thank you for submitting your guess.<br>This is not the rule that activates this robot.
-                    You have another chance to try other number sets and guess the rule again. Press <span class="btn-inline">
+                    You have one more chance to try other number sets and guess the rule again. Press <span class="btn-inline">
                     continue</span> to proceed.`;
                     subBtn.textContent = "Continue";
                     stored_guess = guess;
@@ -1023,7 +1020,7 @@ var task2_trial2 = {
   </div>
 
   <button
-  id="test-robot-btn" disabled style=" position: fixed; bottom: 250px; right: 350px; padding: 12px 18px; font-size: 16px; opacity: 0.5;
+  id="test-robot-btn" disabled style=" position: fixed; bottom: 220px; right: 350px; padding: 12px 18px; font-size: 16px; opacity: 0.5;
   cursor: default;  ">
   Test the robot
   </button>
