@@ -13,32 +13,43 @@ var welcome = {
 };
 timeline.push(welcome);
 
-var task1_instructions = {
+var study_intro = {
+    type: jsPsychHtmlKeyboardResponse,
+    choices: [" "],
+    stimulus: `
+    <div style="max-width:800px"><strong>We need your help on three kinds of tasks</strong>
+    <ul style="max-width:600px; text-align:left; padding-left:180px">
+    <li>In the first you will be choosing correct labels for things</li>
+    <li>In the second one you will be learning about a robot</li>
+    <li>And lastly, you will be filling out two questionaires about how you usually behave in different kinds of life situations.</li>
+    </ul>
+    <p>The whole study should take about 15 minutes.</p>
+    <p><strong>Your final reward amount will depend on your performance in the tasks but you will be rewarded with at least 6$ for participating in this study.</strong></p>
+    <p>Thank you for your help!</p>
+    <p>Press the <span class=kbd>SPACE</span> bar to start.</p>
+    `
+}
+
+timeline.push(study_intro)
+
+var task1_instructions1 = {
     type: jsPsychHtmlKeyboardResponse,
     choices: [" "],
     stimulus: `
   <div style="max-width:800px; margin:auto; line-height:1.3;">
 
-  <div style="display:flex; align-items:center; gap:20px;">
+  <div style="display:flex; align-items:flex-start; gap:20px;">
 
   <!-- LEFT COLUMN: -->
-  <div style="flex:1;">
-  <p style="margin:4px 0; text-align:center;">
+  <div style="flex:1; text-align:left;">
+  <p style="margin:4px 0;">
   We need your help with a decision task!</p>
-
-<p>
-In this task, you are an apprentice working in a barn. Your job is to prepare bags of multicolored corn seeds for sale. Unfortunately, some of the bags have lost their labels and cannot be sold as they are. Your task is to determine which variety of corn seeds is in each bag and attach the correct label.
-</p>
-
-<p>
-The only way you can distinguish between corn varieties is by the proportion of yellow and blue seeds they contain. For example, in <strong>Variety A, 40% of the seeds might be blue and 60% yellow</strong>, whereas in <strong>Variety B the proportions could be 60% blue and 40% yellow</strong>. The bags are sealed, but each has a small opening in one corner. To identify the variety, you can draw seeds from this opening and use the colors you observe to decide which label to attach.
-</p>
-
-<p>
-In this task, you may <strong>draw up to 20 corn seeds</strong> from a bag. You will receive a reward for each label you attach correctly, and no reward for labels that are attached incorrectly.
-</p>
-
-  <p>Let’s look at an example!</p>
+  <p>In this task, you are a helper in a barn. Your job is to prepare bags of multicolored corn seeds for sale. Unfortunately, some of the bags have lost their labels and cannot be sold as they are. Your task is to figure out which type of corn seeds is in each bag and attach the correct label.
+  </p>
+  <p>The only way you can tell corn types apart is the amount of yellow and blue seeds they contain. For example, in <strong>Variety A, 40% of the seeds might be blue and 60% yellow</strong>, whereas in <strong>Variety B the amounts could be 60% blue and 40% yellow</strong>.
+  </p>
+  <p>The bags are sealed, but each has a small opening in one corner. To figure out the corn type, you can draw seeds from this opening and use the colors you see to decide which label to attach.
+  </p>
   <p>Press the <span class="kbd">SPACE</span> bar to proceed.</p>
   </div>
 
@@ -52,8 +63,25 @@ In this task, you may <strong>draw up to 20 corn seeds</strong> from a bag. You 
   `
 };
 
-timeline.push(task1_instructions);
+//timeline.push(task1_instructions1);
 
+var task1_instructions2 = {
+    type: jsPsychHtmlKeyboardResponse,
+    choices: [" "],
+    stimulus: `
+  <div style="max-width:800px; margin:auto; line-height:1.3;">
+  <p>
+  In this task, you may <strong>draw up to 20 corn seeds</strong> from a bag to figure out what label to decide on a label for it.
+  </p>
+  <p><strong>You will receive a reward for each label you attach correctly, and no reward for labels that are attached incorrectly.</strong>
+  </p>
+  <p>Let’s look at an example!</p>
+  <p>Press the <span class="kbd">SPACE</span> bar to proceed.</p>
+  </div>
+  `
+};
+
+//timeline.push(task1_instructions2)
 
 var example_intro = {
     type: jsPsychHtmlKeyboardResponse,
@@ -64,7 +92,7 @@ var example_intro = {
   `
 };
 
-timeline.push(example_intro);
+//timeline.push(example_intro);
 
 var example_trial = {
     type: jsPsychHtmlKeyboardResponse,
@@ -74,21 +102,20 @@ var example_trial = {
   <div style="display:flex; align-items:center; gap:20px; margin-top:2px;">
   <!-- LEFT COLUMN -->
   <div style="flex:1; padding-top:1px; display:flex; flex-direction:column; justify-content:center;">
-  <style>
-  #intro_text,
-  #choice_prompt,
-  #demo_text {
-  margin: 0;
-  }
+  <style> #intro_text, #choice_prompt, #demo_text {margin: 0;}
   </style>
   <p style="margin:5px 0 2px; text-align:center;"><strong>EXAMPLE ONLY</strong></p>
   <img src='img/bag.png' style='width:180px; display:block; margin:20px auto;'>
 
-  <p id="intro_text">You know that this bag is either <strong>LIGHTKERNEL</strong> or <strong>BRIGHTLEAF</strong> variety, but you have no idea which
-  one it is. <br><strong>LIGHTKERNEL</strong> seeds are about <strong>78% yellow and 2% blue. <br>BRIGHTLEAF</strong> are the opposite – about <strong>2% yellow
-  and 78% blue.<br>There are also equal small amounts of red seeds mixed in in all bags – about 20%</strong>, so you can’t tell varieties apart based on those.
+  <div id="intro_text">You know that this bag is either <strong>LIGHTKERNEL</strong> or <strong>BRIGHTLEAF</strong> variety, but you have no idea which
+  one it is. 
+  <ul style="text-align:left; max-width=400px;  padding-left: 60px; list-style-position: outside;">
+  <li><strong>LIGHTKERNEL</strong> seeds are about <strong>78% yellow and 2% blue.</li>
+  <li>BRIGHTLEAF</strong> are the opposite – about <strong>2% yellow and 78% blue.</li>
+  </ul>
+  <p style="text-align:left">There are also equal small amounts of red seeds mixed in in all bags – about 20%</strong>, so you can’t tell varieties apart based on those.
   <br><strong>Red seeds don’t give you any information for choosing the right label</strong>.</p>
-
+</div>
   <p id="choice_prompt" style="margin:15px 0;";>In the actual task you will have the following choices:</p>
 
   <div id="custom-buttons" style="margin-top: 10px;">
@@ -198,7 +225,7 @@ var example_trial = {
     }
 };
 
-timeline.push(example_trial);
+//timeline.push(example_trial);
 
 var trial_intro_text = {
     type: jsPsychHtmlKeyboardResponse,
@@ -208,7 +235,7 @@ var trial_intro_text = {
   of your final reward at the end of the study. Now let’s move on to the actual task!<br><br>Press the <span class="kbd">SPACE</span> bar to start.</p>`
 }
 
-timeline.push(trial_intro_text)
+//timeline.push(trial_intro_text)
 
 function makeSeedTrial(config) {
     const {
@@ -353,9 +380,13 @@ function makeSeedTrial(config) {
 
 var trial_conditions = [{
     trial_id: "b75_y05_r20",
-    introText: `You know that this bag is either <strong>SHADESEED or SUNMAIZE</strong> variety. <strong>SHADESEED</strong> are about
-  <strong>75% blue and 5% yellow. SUNMAIZE</strong> are the opposite – about <strong>5% blue and 75% yellow.<br>About 20% of all bags are red seeds</strong> - so you can’t
-  tell varieties apart based on those. Red seeds don’t give you any information for choosing the right label.
+    introText: `<div style="text-align:left; padding-left:40px">You know that this bag is either <strong>SHADESEED or SUNMAIZE</strong> variety.</div>
+    <ul style="text-align:left; max-width=400px; padding-left:70px">
+    <li><strong>SHADESEED</strong> are about <strong>75% blue and 5% yellow.</li>
+    <li>SUNMAIZE</strong> are the opposite – about <strong>5% blue and 75% yellow.</strong></li>
+    </ul>
+    <div style="text-align:left; padding-left:40px; margin-bottom:15px"><strong>Note: About 20% of all bags are red seeds</strong> - so you can’t tell corn types apart based on those. 
+    Red seeds don’t give you any information for choosing the right label.</div>
   `,
     gridsImage: "img/b75_y05_r20.png",
     seedSequence: ["blue", "red", "blue", "red", "blue", "yellow", "blue", "blue", "red", "blue", "blue", "blue", "blue", "blue", "red", "blue", "blue", "blue", "blue", "blue"],
@@ -364,10 +395,16 @@ var trial_conditions = [{
 },
 {
     trial_id: "b70_y10_r20",
-    introText: `You know that this bag is either <strong>WAKESOIL or SUNDRIFT</strong> variety. <strong>WAKESOIL</strong> are about
-    <strong>70% blue and 10% yellow. SUNDRIFT</strong> are the opposite – about <strong>10% blue and 70% yellow.<br>About 20% of all bags are red seeds</strong> - so you can’t
-    tell varieties apart based on those. Red seeds don’t give you any information for choosing the right label.
-    `,
+    introText: `
+    <div style="text-align:left; padding-left:40px">You know that this bag is either <strong>WAKESOIL or SUNDRIFT</strong> variety.</div>
+    <ul style="text-align:left; max-width=400px; padding-left:70px">
+    <li><strong>WAKESOIL</strong> are about <strong>70% blue and 10% yellow.</li>
+    <li>SUNDRIFT</strong> are the opposite – about <strong>10% blue and 70% yellow.</strong></li>
+    </ul>
+    <div style="text-align:left; padding-left:40px; margin-bottom:15px"><strong>Note: About 20% of all bags are red seeds</strong> - so you can’t tell corn types apart based on those. 
+    Red seeds don’t give you any information for choosing the right label.</div>
+    `
+    ,
     gridsImage: "img/b70_y10_r20.png",
     seedSequence: ["blue", "red", "blue", "red", "blue", "yellow", "blue", "blue", "blue", "blue", "blue", "red", "blue", "blue", "blue", "blue", "yellow", "red", "blue", "blue"],
     labelA: "WAKESOIL",
@@ -375,10 +412,16 @@ var trial_conditions = [{
 },
 {
     trial_id: "b15_y65_r20",
-    introText: `You know that this bag is either <strong>DEEPSTEM or GOLDLEAF</strong> variety. <strong>DEEPSTEM</strong> are about
-    <strong>65% blue and 15% yellow. GOLDLEAF</strong> are the opposite – about <strong>15% blue and 65% yellow.<br>About 20% of all bags are red seeds</strong> - so you can’t
-    tell varieties apart based on those. Red seeds don’t give you any information for choosing the right label.
+    introText: `
+    <div style="text-align:left; padding-left:40px">You know that this bag is either <strong>DEEPSTEM or GOLDLEAF</strong> variety.</div>
+    <ul style="text-align:left; max-width=400px; padding-left:70px">
+    <li><strong>DEEPSTEM</strong> are about <strong>65% blue and 15% yellow.</li>
+    <li>GOLDLEAF</strong> are the opposite – about <strong>15% blue and 65% yellow.</strong></li>
+    </ul>
+    <div style="text-align:left; padding-left:40px; margin-bottom:15px"><strong>Note: About 20% of all bags are red seeds</strong> - so you can’t tell corn types apart based on those. 
+    Red seeds don’t give you any information for choosing the right label.</div>
     `,
+
     gridsImage: "img/b15_y65_r20.png",
     seedSequence: ["yellow", "red", "blue", "yellow", "yellow", "blue", "yellow", "red", "yellow", "yellow", "blue", "yellow", "yellow", "yellow", "yellow", "yellow", "red", "yellow", "yellow", "yellow"],
     labelA: "DEEPSTEM",
@@ -386,9 +429,14 @@ var trial_conditions = [{
 },
 {
     trial_id: "b20_y60_r20",
-    introText: `You know that this bag is either <strong>TALLGRAIN or WILDLEAF</strong> variety. <strong>TALLGRAIN</strong> are about
-    <strong>20% blue and 60% yellow. WILDLEAF</strong> are the opposite – about <strong>60% blue and 20% yellow.<br>About 20% of all bags are red seeds</strong> - so you can’t
-    tell varieties apart based on those. Red seeds don’t give you any information for choosing the right label.
+    introText: `
+    <div style="text-align:left; padding-left:40px">You know that this bag is either <strong>TALLGRAIN or WILDLEAF</strong> variety.</div>
+    <ul style="text-align:left; max-width=400px; padding-left:70px">
+    <li><strong>TALLGRAIN</strong> are about <strong>20% blue and 60% yellow.</li>
+    <li>WILDLEAF</strong> are the opposite – about <strong>60% blue and 20% yellow.</strong></li>
+    </ul>
+    <div style="text-align:left; padding-left:40px; margin-bottom:15px"><strong>Note: About 20% of all bags are red seeds</strong> - so you can’t tell corn types apart based on those. 
+    Red seeds don’t give you any information for choosing the right label.</div>
     `,
     gridsImage: "img/b20_y60_r20.png",
     seedSequence: ["red", "yellow", "blue", "yellow", "red", "red", "yellow", "red", "yellow", "yellow", "yellow", "blue", "red", "yellow", "yellow", "red", "yellow", "yellow", "yellow", "blue"],
@@ -397,9 +445,14 @@ var trial_conditions = [{
 },
 {
     trial_id: "b25_y55_r20",
-    introText: `You know that this bag is either <strong>FAIRMAIZE or STRONGLEAF</strong> variety. <strong>FAIRMAIZE</strong> are about
-    <strong>55% blue and 25% yellow. STRONGLEAF</strong> are the opposite – about <strong>25% blue and 55% yellow.<br>About 20% of all bags are red seeds</strong> - so you can’t
-    tell varieties apart based on those. Red seeds don’t give you any information for choosing the right label.
+    introText: `
+    <div style="text-align:left; padding-left:40px">You know that this bag is either <strong>FAIRMAIZE or STRONGLEAF</strong> variety.</div>
+    <ul style="text-align:left; max-width=400px; padding-left:70px">
+    <li><strong>FAIRMAIZE</strong> are about <strong>55% blue and 25% yellow.</li>
+    <li>STRONGLEAF</strong> are the opposite – about <strong>25% blue and 55% yellow.</strong></li>
+    </ul>
+    <div style="text-align:left; padding-left:40px; margin-bottom:15px"><strong>Note: About 20% of all bags are red seeds</strong> - so you can’t tell corn types apart based on those. 
+    Red seeds don’t give you any information for choosing the right label.</div>
     `,
     gridsImage: "img/b25_y55_r20.png",
     seedSequence: ["red", "yellow", "blue", "yellow", "blue", "yellow", "yellow", "red", "yellow", "blue", "yellow", "yellow", "red", "yellow", "red", "yellow", "yellow", "red", "yellow", "blue"],
@@ -408,9 +461,14 @@ var trial_conditions = [{
 },
 {
     trial_id: "b50_y30_r20",
-    introText: `You know that this bag is either <strong>SUNKERNEL or HARVESTWELL</strong> variety. <strong>SUNKERNEL</strong> are about
-    <strong>30% blue and 50% yellow. HARVESTWELL</strong> are the opposite – about <strong>50% blue and 30% yellow.<br>About 20% of all bags are red seeds</strong> - so you can’t
-    tell varieties apart based on those. Red seeds don’t give you any information for choosing the right label.
+    introText: `
+    <div style="text-align:left; padding-left:40px">You know that this bag is either <strong>SUNKERNEL or HARVESTWELL</strong> variety.</div>
+    <ul style="text-align:left; max-width=400px; padding-left:70px">
+    <li><strong>SUNKERNEL</strong> are about <strong>30% blue and 50% yellow.</li>
+    <li>HARVESTWELL</strong> are the opposite – about <strong>50% blue and 30% yellow.</strong></li>
+    </ul>
+    <div style="text-align:left; padding-left:40px; margin-bottom:15px"><strong>Note: About 20% of all bags are red seeds</strong> - so you can’t tell corn types apart based on those. 
+    Red seeds don’t give you any information for choosing the right label.</div>
     `,
     gridsImage: "img/b50_y30_r20.png",
     seedSequence: ["yellow", "blue", "red", "blue", "yellow", "blue", "blue", "yellow", "red", "blue", "blue", "yellow", "blue", "blue", "red", "blue", "yellow", "blue", "red", "yellow"],
@@ -419,9 +477,14 @@ var trial_conditions = [{
 },
 {
     trial_id: "b35_y45_r20",
-    introText: `You know that this bag is either <strong>PUREGRAIN or MAIZELEAF</strong> variety. <strong>PUREGRAIN</strong> are about
-    <strong>45% blue and 35% yellow. MAIZELEAF</strong> are the opposite – about <strong>35% blue and 45% yellow.<br>About 20% of all bags are red seeds</strong> - so you can’t
-    tell varieties apart based on those. Red seeds don’t give you any information for choosing the right label.
+    introText: `
+    <div style="text-align:left; padding-left:40px">You know that this bag is either <strong>PUREGRAIN or MAIZELEAF</strong> variety.</div>
+    <ul style="text-align:left; max-width=400px; padding-left:70px">
+    <li><strong>PUREGRAIN</strong> are about <strong>45% blue and 35% yellow.</li>
+    <li>MAIZELEAF</strong> are the opposite – about <strong>35% blue and 45% yellow.</strong></li>
+    </ul>
+    <div style="text-align:left; padding-left:40px; margin-bottom:15px"><strong>Note: About 20% of all bags are red seeds</strong> - so you can’t tell corn types apart based on those. 
+    Red seeds don’t give you any information for choosing the right label.</div>
     `,
     gridsImage: "img/b35_y45_r20.png",
     seedSequence: ["blue", "yellow", "red", "blue", "yellow", "red", "blue", "yellow", "yellow", "blue", "yellow", "yellow", "blue", "yellow", "red", "yellow", "blue", "yellow", "yellow", "yellow"],
@@ -501,11 +564,11 @@ const sliderQs = {
 const randomized_conditions =
     jsPsych.randomization.shuffle(trial_conditions);
 
-randomized_conditions.forEach(cond => {
+/*randomized_conditions.forEach(cond => {
     timeline.push(makeSeedTrial(cond));
     timeline.push(sliderQs);
     timeline.push(itiTrial);
-});
+});*/
 
 var task2_intro = {
     type: jsPsychHtmlKeyboardResponse,
@@ -581,38 +644,45 @@ var task2_intro = {
     }
 };
 
-timeline.push(task2_intro)
+//timeline.push(task2_intro)
 
-var task2_instructions = {
+var task2_instructions1 = {
     type: jsPsychHtmlKeyboardResponse,
     choices: [" "],
     stimulus: `
   <div style="margin: 0 250px;">
 
-  <p>
-  This is a special robot that gets activated when its number dials
+  <p>This is a special robot that gets activated when its number dials
   are set according to a rule.<br><strong>Your task is to figure out the rule that makes this robot go.</strong>
   </p>
   <img src="img/rob_deact.png" style="width: 220px;">
-  <p>
-  The rule is not about specific numbers but <strong>a relation between three
-  numbers</strong> appearing on the robot's dials. Before guessing the rule, you can
-  test out different sets of numbers to see which sets activate it.
-  </p>
-
-  <p>
-  You can test as many number sets as you want. When you feel very confident that you have discovered the
-  rule, click <span class="btn-inline">guess the rule</span> at the bottom right. <strong>You will get a reward only if you guess 
-  the rule correctly</strong>, tests don't generate rewards.
-  </p>
-  <p>
-  Press the <span class="kbd">SPACE</span> bar to proceed.
-  </p>
+  <p>Press the <span class="kbd">SPACE</span> bar to see the instructions.</p>
   </div>
   `
 };
 
-timeline.push(task2_instructions)
+timeline.push(task2_instructions1)
+
+var task2_instructions2 = {
+    type: jsPsychHtmlKeyboardResponse,
+    choices: [" "],
+    stimulus: `
+  <div style="margin: 0 250px;">
+  <img src="img/rob_deact.png" style="width: 220px;">
+  <div style="text-align:left; max-width:700px">
+  <p style="margin-bottom:10px">The rule is not about specific numbers but <strong>a relation between three
+  numbers</strong> appearing on the robot's dials.</p>
+  <p style="margin-bottom:15px"> To guess the rule, you can test out different sets of numbers to 
+  see which sets activate it. You can test as many number sets as you want.</p>
+  <p>When you feel very confident that you have discovered the rule, click <span class="btn-inline">guess the rule</span>.</p>
+  <p><strong>You will get a reward only if you guess the rule correctly</strong>, tests don't generate rewards.</p>
+  </div>
+  <p>Press the <span class="kbd">SPACE</span> bar to start.</p>
+  </div>
+  `
+};
+
+timeline.push(task2_instructions2)
 
 var task2_trial_intro = {
     type: jsPsychHtmlKeyboardResponse,
@@ -720,7 +790,7 @@ function renderTestedSetsHTML(testedSets) {
 }
 
 
-var task2_trial = {
+var task2_trial1 = {
     type: jsPsychHtmlKeyboardResponse,
     choices: [],
 
@@ -728,9 +798,9 @@ var task2_trial = {
   <div style="max-width:1000px; margin:0 auto;">
 
   <!-- TOP: centered instruction text -->
-  <div style=" text-align:center; margin: 0 auto 10px auto; max-width:800px">
+  <div style=" text-align:left; margin: 0 auto 10px auto; max-width:800px">
   You already know that <span class="btn-inline" style="font-family: Orbitron">2-4-6</span> activates the robot. This set appears on the left with "yes" next to it. 
-  Your task is to figure out <strong>the rule</strong> that makes this robot go. To test a set:
+  <strong>Your task is to figure out the rule</strong> that makes this robot go. To test a set:
 </div>
 
 <ul style="list-style-position: inside; text-align: left; max-width: 500px; margin: 0 auto 10px auto; padding: 0;">
@@ -738,8 +808,8 @@ var task2_trial = {
   <li>Briefly explain why you are testing that set.</li>
   <li>Press <span class="btn-inline">Test the robot</span> to see if that set activates the robot.</li>
   </ul>
-  <div style="text-align:center; margin: 0 auto 20px auto; max-width:800px">
- All tested sets and results will appear on the left. <strong>When you feel very confident about the rule</strong>, press
+  <div style="text-align:left; margin: 0 auto 20px auto; max-width:800px">
+ All tested sets and results will appear on the left. <strong>When you feel <span style="text-decoration: underline;">very confident</span> about the rule</strong>, press
     <span class="btn-inline">Guess the rule</span> to submit your guess.
 </div>
 
@@ -877,7 +947,42 @@ var task2_trial = {
     }
 };
 
-timeline.push(task2_trial)
+timeline.push(task2_trial1)
+
+const rule_conf1 = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+    <div class="slider-question">
+      <p>How certain are you that your rule correctly explains how this robot operates?</p>
+      <input type="range" min="0" max="100" value="50" id="cert" class="confidence-slider inactive">
+      <div class="slider-labels">
+        <span>Not certain at all</span>
+        <span>Completely certain</span>
+      </div>
+    </div>
+  `,
+    choices: ["Continue"],
+    on_load: function () {
+        const btn = document.querySelector(".jspsych-btn");
+        const slider = document.getElementById("cert");
+        btn.disabled = true;
+
+        this.rule_certainty = null;
+
+        slider.addEventListener("input", () => {
+            slider.classList.remove("inactive");
+            btn.disabled = false;
+            this.rule_certainty = Number(slider.value);
+        });
+    },
+    on_finish: function (data) {
+        data.trial_type = "rule_cert_rating";
+        data.rule_certainty = this.rule_certainty;
+    }
+};
+
+timeline.push(rule_conf1)
+
 
 let showed_task2_retry = false;
 
@@ -954,7 +1059,6 @@ var submit_rule = {
 
 timeline.push(submit_rule)
 
-
 var task2_trial2 = {
     type: jsPsychHtmlKeyboardResponse,
     choices: [],
@@ -964,7 +1068,7 @@ var task2_trial2 = {
 
   <!-- TOP: centered instruction text -->
   <div style=" text-align:center; margin: 0 auto 10px auto; max-width:800px">
-  Your task is to figure out <strong>the rule</strong> that makes this robot go. To test a set:
+  <strong>Your task is to figure out the rule</strong> that makes this robot go. To test a set:
 </div>
 
 <ul style="list-style-position: inside; text-align: left; max-width: 400px; margin: 0 auto 10px auto; padding: 0;">
@@ -1115,21 +1219,7 @@ var task2_trial2 = {
     }
 };
 
-var even_rule_branch = {
-    timeline: [task2_trial2, submit_rule], // let them test more, then guess again
-    conditional_function: function () {
-        const last = jsPsych.data.get().last(1).values()[0];
-        const should_run = (last.even_rule === true) && (showed_task2_retry === false);
-        // If we're about to run it, flip the flag so it can't run again
-        if (should_run) showed_task2_retry = true;
-
-        return should_run;
-    }
-};
-
-timeline.push(even_rule_branch)
-
-const rule_conf = {
+const rule_conf2 = {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
     <div class="slider-question">
@@ -1161,7 +1251,20 @@ const rule_conf = {
     }
 };
 
-timeline.push(rule_conf)
+var even_rule_branch = {
+    timeline: [task2_trial2, rule_conf2, submit_rule], // let them test more, then guess again
+    conditional_function: function () {
+        const last = jsPsych.data.get().last(1).values()[0];
+        const should_run = (last.even_rule === true) && (showed_task2_retry === false);
+        // If we're about to run it, flip the flag so it can't run again
+        if (should_run) showed_task2_retry = true;
+
+        return should_run;
+    }
+};
+
+timeline.push(even_rule_branch)
+
 
 var submit_alt_rule = {
     type: jsPsychHtmlKeyboardResponse,
@@ -1264,8 +1367,8 @@ timeline.push(att_check)
 
 var scales_intro = {
     type: jsPsychHtmlKeyboardResponse,
-    stimulus: `<p>Thank you for completing the task. Your final reward amount is being calculated. <br>
-    Please answer some survey questions before finishing the study.<br>
+    stimulus: `<p>Thank you for completing the task!<br><br>Your final reward amount is being calculated.<br><br>
+    Please answer some survey questions before finishing the study.<br><br>
     Press the <span class="kbd">SPACE</span> bar to proceed</p>`,
     choices: [" "]
 }
