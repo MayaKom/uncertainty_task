@@ -42,7 +42,7 @@ var task1_instructions1 = {
 
   <!-- LEFT COLUMN: -->
   <div style="flex:1; text-align:left;">
-  <p style="margin:4px 0;">
+  <p style="margin:4px 0; text-align:center">
   We need your help with a decision task!</p>
   <p>In this task, you are a helper in a barn. Your job is to prepare bags of multicolored corn seeds for sale. Unfortunately, some of the bags have lost their labels and cannot be sold as they are. Your task is to figure out which type of corn seeds is in each bag and attach the correct label.
   </p>
@@ -50,7 +50,7 @@ var task1_instructions1 = {
   </p>
   <p>The bags are sealed, but each has a small opening in one corner. To figure out the corn type, you can draw seeds from this opening and use the colors you see to decide which label to attach.
   </p>
-  <p>Press the <span class="kbd">SPACE</span> bar to proceed.</p>
+  <p style="text-align:center">Press the <span class="kbd">SPACE</span> bar to proceed.</p>
   </div>
 
   <!-- RIGHT COLUMN: image -->
