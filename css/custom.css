@@ -175,6 +175,10 @@
     width: 100%;
 }
 
+.large-likert .jspsych-survey-likert-statement {
+    font-size: 18px;
+}
+
 .jspsych-survey {
     max-width: 1000px;
     margin: 0 auto;
