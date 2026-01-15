@@ -14,34 +14,45 @@ const turkInfo = {
     preview: (getUrlParam("assignmentId") === "ASSIGNMENT_ID_NOT_AVAILABLE")
 };
 
-async function saveDataToServer() {
-    if (turkInfo.preview) {
-        return { ok: true, skipped: "preview" };
+function submitToMTurk(extraFields = {}) {
+    // If you're just testing locally / not launched from MTurk, there's nowhere to submit.
+    if (!turkInfo.assignmentId || !turkInfo.turkSubmitTo || turkInfo.preview) {
+        document.body.innerHTML = `
+      <p><strong>Response saved.</strong></p>
+      <p>You can now close this tab.</p>
+    `;
+        return;
     }
-    const consentTrial = jsPsych.data.get().filter({ trial_cat: "consent" }).last(1).values()[0];
-    const consented = consentTrial ? !!consentTrial.consented : null;
 
-    const body = {
-        turkInfo,
-        meta: {
-            consented,
-            userAgent: navigator.userAgent,
-            url: window.location.href
-        },
-        payload: jsPsych.data.get().values()
-    };
-
-    const resp = await fetch("./api/save.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-        keepalive: true
-    });
-
-    if (!resp.ok) throw new Error(await resp.text());
-    return resp.json();
+    // Use jsPsych's built-in MTurk submission helper.
+    jsPsych.turk.submitToTurk(extraFields);
 }
 
+async function saveDataToServer(payload, turkInfo = {}, meta = {}) {
+    const SAVE_URL = "https://decisiontask.gse.harvard.edu/api/save.php";
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
+    try {
+        const res = await fetch(SAVE_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ turkInfo, meta, payload }),
+            signal: controller.signal
+        });
+
+        const text = await res.text();
+        let json;
+        try { json = JSON.parse(text); } catch { json = null; }
+
+        if (!res.ok) throw new Error(`Save failed: HTTP ${res.status}. Body: ${text}`);
+        if (!json || json.ok !== true) throw new Error(`Save failed: unexpected response: ${text}`);
+
+        return json;
+    } finally {
+        clearTimeout(timeoutId);
+    }
+}
 
 var jsPsych = initJsPsych({});
 
@@ -53,8 +64,9 @@ var consent_trial = {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
      <div style="max-width: 800px; margin: auto; text-align: left; font-size: 16px; line-height: 1.6;">
-      <h2 style="text-align: center;">Study Title: Online studies of causal cognition</h2>
-      <p style="text-align: center;"><strong>Researcher: Elizabeth Bonawitz, Ph.D</strong></p>
+      <h2 style="text-align: center;">Consent form</h2>
+      <p style="text-align: left;">Study Title: Online studies of causal cognition</p>
+      <p style="text-align: left;">Researcher: Elizabeth Bonawitz, Ph.D</p>
       
       <p>Dear Participants,</p>
       
@@ -80,7 +92,7 @@ var consent_trial = {
       <p>The purpose of this research is to understand how people are able to learn from their interactions with objects, events, and other people. We are currently studying individuals' learning and development in multiple domains, including causal, visual, language and memory.</p>
       
       <h4>How long will the research last and what will I need to do?</h4>
-      <p>This session will take approximately 15 minutes (including filling out this consent form).</p>
+      <p>This session will take approximately 20 minutes (including filling out this consent form).</p>
       <p>During the self-guided session, you may be presented with objects or images or watch a video clip and answer questions. There are no "right or wrong" responses to any of these questions—we simply want to find out how people approach objects and situations. Please note that you are NOT being evaluated academically or psychologically, we are simply conducting basic research.</p>
       
       <h4>Is there any way being in this study could be bad for me?</h4>
@@ -132,6 +144,7 @@ var consent_trial = {
     }
 };
 
+
 timeline.push(consent_trial);
 
 var consent_check = {
@@ -158,7 +171,9 @@ timeline.push(consent_check);
 var welcome = {
     type: jsPsychHtmlKeyboardResponse,
     choices: [" "],
-    stimulus: "Welcome to the study!<br><br>Press the <span class=kbd>SPACE</span> bar to begin."
+    stimulus: `Welcome to the study!<br><br>
+    This study must be completed on a desktop or laptop computer. Mobile phones and tablets are not supported.<br><br>
+    Press the <span class=kbd>SPACE</span> bar to begin.`
 };
 timeline.push(welcome);
 
@@ -166,14 +181,14 @@ var study_intro = {
     type: jsPsychHtmlKeyboardResponse,
     choices: [" "],
     stimulus: `
-    <div style="max-width:800px"><strong>We need your help on three kinds of tasks</strong>
-    <ul style="max-width:600px; text-align:left; padding-left:180px">
-    <li>In the first you will be choosing correct labels for things</li>
-    <li>In the second one you will be learning about a robot</li>
-    <li>And lastly, you will be filling out two questionaires about how you usually behave in different kinds of life situations.</li>
+    <div style="max-width:800px"><strong>We need your help with three kinds of tasks</strong>
+    <ul style="max-width:600px; text-align:left; padding-left:200px">
+    <li>In the first, you will choose labels for bags</li>
+    <li>In the second, you will learn about a robot</li>
+    <li>Lastly, you will fill out two questionnaires about how you usually behave in different life situations.</li>
     </ul>
-    <p>The whole study should take about 15 minutes.</p>
-    <p><strong>Your final reward amount will depend on your performance in the tasks but you will be rewarded with at least 6$ for participating in this study.</strong></p>
+    <p>The whole study should take about 20 minutes.</p>
+    <p><strong>Your final reward will depend on your performance in the tasks, but you will receive at least $6 for participating in this study.</strong></p>
     <p>Thank you for your help!</p>
     <p>Press the <span class=kbd>SPACE</span> bar to start.</p>
     `
@@ -490,7 +505,7 @@ function makeSeedTrial(config) {
                             drawButton.style.opacity = 1;
                             drawButton.style.cursor = "pointer";
                         }
-                    }, 1);
+                    }, 2000);
 
                 });
 
@@ -830,7 +845,7 @@ var task2_instructions2 = {
   numbers</strong> appearing on the robot's dials.</p>
   <p style="margin-bottom:15px"> To guess the rule, you can test out different sets of numbers to 
   see which sets activate it. You can test as many number sets as you want.</p>
-  <p>When you feel very confident that you have discovered the rule, click <span class="btn-inline">guess the rule</span>.</p>
+  <p>When you feel <strong>very confident</strong> that you have discovered the rule, click <span class="btn-inline">guess the rule</span>.</p>
   <p><strong>You will get a reward only if you guess the rule correctly</strong>, tests don't generate rewards.</p>
   </div>
   <p>Press the <span class="kbd">SPACE</span> bar to start.</p>
@@ -842,11 +857,10 @@ timeline.push(task2_instructions2)
 
 var task2_trial_intro = {
     type: jsPsychHtmlKeyboardResponse,
-    choices: [" "],
-    response_ends_trial: false,
+    choices: "NO_KEYS",
     stimulus: `
   <div id="rob-gen-prompt" style="margin-bottom:20px;">
-  The first set of test numbers will be chosen for you randomly using the random number generator you saw before.<br>
+  <strong>The first set of test numbers will be chosen for you randomly</strong> using the random number generator you saw before.<br>
   Press the generator button to see the numbers.
   </div>
 
@@ -909,15 +923,17 @@ var task2_trial_intro = {
                     promptText.innerHTML =
                         `This set fits the robot's rule, so it got activated!<br>Now it’s your turn to test new sets of numbers to guess this robot's rule.<br>Press the <span class="kbd">SPACE</span> bar to start.
           `
+                    document.activeElement?.blur?.();
                     document.addEventListener(
                         "keydown",
                         (e) => {
-                            if (e.code === "Space") {
+                            if (e.code === "Space" || e.key === " ") {
+                                e.preventDefault();
                                 jsPsych.finishTrial();
                             }
                         },
                         {
-                            once: true
+                            once: true, capture: true
                         }
                     );
                 }, 400);
@@ -989,15 +1005,15 @@ function makeTask2TestTrial({ attemptLabel, showKnownExampleText }) {
         </div>
 
         <div style="display:flex; gap:40px; align-items:flex-start; justify-content:center;">
-        <div id="tested-sets" style="min-width:220px; font-family: monospace; font-size:16px;">
+        <div id="tested-sets" style="min-width:220px; font-family: Orbitron, sans-serif; font-size:16px;">
         <div style="font-weight:bold; margin-bottom:10px;">Tested sets</div>
         </div>
 
           <div class="robot-container">
             <img src="img/rob_deact.png" id="robot-img" alt="Robot">
-            <div class="robot-num-box" id="box1"><input type="text" class="robot-input" inputmode="numeric" pattern="[0-9]+"/></div>
-            <div class="robot-num-box" id="box2"><input type="text" class="robot-input" inputmode="numeric" pattern="[0-9]+"/></div>
-            <div class="robot-num-box" id="box3"><input type="text" class="robot-input" inputmode="numeric" pattern="[0-9]+"/></div>
+            <div class="robot-num-box" id="box1"><input class="robot-input" type="number" min="1" step="1" inputmode="numeric"></div>
+            <div class="robot-num-box" id="box2"><input class="robot-input" type="number" min="1" step="1" inputmode="numeric"></div>
+            <div class="robot-num-box" id="box3"><input class="robot-input" type="number" min="1" step="1" inputmode="numeric"></div>
           </div>
 
           <div style="min-width:260px;">
@@ -1065,14 +1081,16 @@ function makeTask2TestTrial({ attemptLabel, showKnownExampleText }) {
 
                 const test_index = attempt.tested_sets.length + 1;
 
-                jsPsych.data.write({
+                jsPsych.data.get().push({
                     trial_cat: "robot_test",
                     attempt: attemptLabel,
                     test_index: test_index,
                     numbers: values,
                     theory: theoryText,
-                    result: isAscending ? "yes" : "no"
+                    result: isAscending ? "yes" : "no",
+                    ts: new Date().toISOString()
                 });
+
 
                 robotImg.src = isAscending ? "img/rob_act.png" : "img/rob_deact.png";
                 resultText.textContent = isAscending
@@ -1227,6 +1245,7 @@ function makeSubmitRuleTrial(attemptLabel) {
 
                 const evenRule =
                     guess_lc.includes("even") ||
+                    guess_lc.includes("different") ||
                     guess_lc.includes("two") ||
                     /\b2\b/.test(guess_lc);
 
@@ -1244,7 +1263,7 @@ function makeSubmitRuleTrial(attemptLabel) {
 
                     rulePrompt.innerHTML = `
                     <p>Thank you for submitting your guess.<br>This is not the rule that activates this robot. You have one 
-                    more chance to try other number sets and guess the rule again. Press <span class="btn-inline"> Continue</span> to proceed.</p>`;
+                    more chance to try out other number sets and guess the rule again. Press <span class="btn-inline"> Continue</span> to proceed.</p>`;
 
                     subBtn.textContent = "Continue";
 
@@ -1303,8 +1322,9 @@ var submit_alt_rule = {
     type: jsPsychHtmlKeyboardResponse,
     response_ends_trial: false,
     stimulus: `
-  <p>Thank you for submitting your guess!<br>In the boxes below, please provide as many alterntive rules as you can.<br>
-  What else could have been the robot's rule?</p>
+  <p>Thank you for submitting your guess!<br>You will see the robot's correct rule on the final feedback screen.<br>
+  If your guess turns out to be incorrect, what else could the robot’s rule have been?
+  In the boxes below, please provide as many alternative rules as you can.</p>
   <div>
  <div id="alt-rules">
   ${[1, 2, 3, 4, 5, 6].map(i => `
@@ -1441,7 +1461,7 @@ var ius_scale = {
         prompt: item.text,
         name: item.id,
         labels: char,
-        required: false
+        required: true
     })),
     css_classes: ["narrow-likert", "large-likert"],
     data: {
@@ -1501,7 +1521,7 @@ var reg_scale_1 = {
         prompt: item.text,
         name: item.id,
         labels: how_often,
-        required: false
+        required: true
     })),
     css_classes: ["narrow-likert", "large-likert"],
     data: {
@@ -1520,7 +1540,7 @@ var reg_scale_2 = {
         prompt: item.text,
         name: item.id,
         labels: how_often,
-        required: false
+        required: true
     })),
     css_classes: ["narrow-likert", "large-likert"],
     data: {
@@ -1530,6 +1550,40 @@ var reg_scale_2 = {
 }
 
 timeline.push(reg_scale_2)
+
+const demographics = {
+    type: jsPsychSurvey,
+    survey_json: {
+        title: "Please answer the final questions below",
+        showQuestionNumbers: "off",
+        pages: [
+            {
+                elements: [
+                    {
+                        type: "text",
+                        name: "age",
+                        title: "What is your age?",
+                        inputType: "number",
+                        isRequired: true,
+                        min: 18,
+                        max: 120
+                    },
+                    {
+                        type: "radiogroup",
+                        name: "gender",
+                        title: "What is your gender?",
+                        isRequired: true,
+                        choices: ["Female", "Male", "non-binary", "Other / Prefer not to say"]
+                    }
+                ]
+            }
+        ]
+    }
+};
+
+
+timeline.push(demographics)
+
 
 var feedback_trial = {
     type: jsPsychHtmlButtonResponse,
@@ -1587,31 +1641,31 @@ timeline.push(feedback_trial)
 var end_screen = {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
-    <p>Thank you for completing the study. Your final reward amount is 7.5$</p>
+    <p>Thank you for completing the study.</p>
+    <p>Your final reward amount is <strong>$7.50</strong>.</p>
     <p>Click <strong>Submit</strong> to submit your HIT and receive payment.</p>
   `,
     choices: ["Submit"],
     on_finish: async function () {
-
-        // Mark completion
         study_completed = true;
+        document.body.innerHTML = `<p>Submitting your response… please do not close this window.</p>`;
 
-        document.body.innerHTML =
-            `<p>Submitting your response… please do not close this window.</p>`;
+        const payload = jsPsych.data.get().values();
 
+        let savedAs = "";
         try {
-            await saveDataToServer();
-        } catch (e) {
-            console.error(e);
+            const result = await saveDataToServer(payload, turkInfo, { consented: true, study: "uncertaintitytask" });
+            savedAs = result.savedAs || "";
+            console.log("Saved as:", savedAs);
+        } catch (err) {
+            console.error("Data save failed:", err);
+            // Keep going to submission / finish screen anyway.
         }
 
-        submitToMTurk();
+        // If in MTurk, include saved filename as a bonus field (optional)
+        submitToMTurk(savedAs ? { savedAs } : {});
     }
 };
-
-timeline.push(end_screen)
-
-
 
 
 timeline.push(end_screen);
