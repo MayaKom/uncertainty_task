@@ -8,8 +8,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
   exit;
 }
 
+
+
 // Data dir
 $DATA_DIR = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "data";
+
 
 // Ensure exists
 if (!is_dir($DATA_DIR)) {
@@ -40,26 +43,25 @@ if (!is_array($decoded) || !isset($decoded["payload"])) {
   exit;
 }
 
-$turkInfo = is_array($decoded["turkInfo"] ?? null) ? $decoded["turkInfo"] : [];
-$meta     = is_array($decoded["meta"] ?? null) ? $decoded["meta"] : [];
-$payload  = $decoded["payload"];
+$prolificInfo = is_array($decoded["prolificInfo"] ?? null) ? $decoded["prolificInfo"] : [];
+$meta         = is_array($decoded["meta"] ?? null) ? $decoded["meta"] : [];
+$payload      = $decoded["payload"];
 
-// Skip MTurk preview
-if (($turkInfo["assignmentId"] ?? "") === "ASSIGNMENT_ID_NOT_AVAILABLE") {
-  echo json_encode(["ok" => true, "skipped" => "preview"]);
-  exit;
-}
 
-// Build safe filename parts
-$assignmentId = (string)($turkInfo["assignmentId"] ?? "no-assignment");
-$workerId     = (string)($turkInfo["workerId"] ?? "");
-$workerHash   = $workerId !== "" ? hash("sha256", $workerId) : "no-worker";
+$prolificPid = (string)($prolificInfo["prolific_pid"] ?? "");
+$studyId     = (string)($prolificInfo["study_id"] ?? "");
+$sessionId   = (string)($prolificInfo["session_id"] ?? "");
 
-$iso = gmdate("Y-m-d\TH-i-s\Z");        // safe for filenames (no colons)
+$pidHash = $prolificPid !== "" ? hash("sha256", $prolificPid) : "no-pid";
+
+// Safe filename parts
+$iso    = gmdate("Y-m-d\TH-i-s\Z");
 $suffix = bin2hex(random_bytes(4));
-$assignmentSafe = preg_replace('/[^A-Za-z0-9_\-]/', '_', $assignmentId);
 
-$filename = "{$iso}_{$assignmentSafe}_{$workerHash}_{$suffix}.csv";
+$studySafe   = $studyId   !== "" ? preg_replace('/[^A-Za-z0-9_\-]/', '_', $studyId)   : "no-study";
+$sessionSafe = $sessionId !== "" ? preg_replace('/[^A-Za-z0-9_\-]/', '_', $sessionId) : "no-session";
+
+$filename = "{$iso}_{$studySafe}_{$sessionSafe}_{$pidHash}_{$suffix}.csv";
 $filepath = $DATA_DIR . DIRECTORY_SEPARATOR . $filename;
 
 // Build rows for CSV (one row per trial; participant/meta fields repeated)
@@ -77,24 +79,36 @@ if (!$looksLikeList) {
 }
 
 $rows = [];
-$headerKeys = [];
 
 // Participant-level fields (flatten turkInfo + meta at top-level)
 $base = [
-  "receivedAt"   => $receivedAt,
-  "assignmentId" => $assignmentId,
-  "workerHash"   => $workerHash,
+  "receivedAt" => $receivedAt,
+  "pidHash"    => $pidHash,
+  "studyId"    => $studyId,
+  "sessionId"  => $sessionId,
 ];
 
-// Include all turkInfo + meta fields as columns
-foreach ($turkInfo as $k => $v) {
-  $key = "turk_" . $k;
+$header = array_keys($base);
+
+// Include all prolificInfo + meta fields as columns
+foreach ($prolificInfo as $k => $v) {
+  $key = "prolific_" . $k;
   $base[$key] = (is_scalar($v) || $v === null) ? $v : json_encode($v, JSON_UNESCAPED_SLASHES);
+
+if (!in_array($key, $header, true)) {
+    $header[] = $key;
+}
 }
 foreach ($meta as $k => $v) {
   $key = "meta_" . $k;
   $base[$key] = (is_scalar($v) || $v === null) ? $v : json_encode($v, JSON_UNESCAPED_SLASHES);
+
+if (!in_array($key, $header, true)) {
+    $header[] = $key;
 }
+}
+
+
 
 // Build per-trial rows
 foreach ($payloadRows as $i => $trial) {
@@ -109,10 +123,13 @@ foreach ($payloadRows as $i => $trial) {
 
   $rows[] = $row;
 
+
   // Track union of keys for a stable header
   foreach ($row as $k => $_) {
-    $headerKeys[$k] = true;
+  if (!in_array($k, $header, true)) {
+    $header[] = $k;
   }
+}
 }
 
 if (count($rows) === 0) {
@@ -129,19 +146,6 @@ if ($fp === false) {
   echo json_encode(["ok" => false, "error" => "Failed to open temp CSV file"]);
   exit;
 }
-
-// Header in a consistent order: base first, then everything else alphabetically
-$header = array_keys($headerKeys);
-
-// Put some important columns first if present
-$priority = ["receivedAt","assignmentId","workerHash","trialIndex"];
-$headerOrdered = [];
-foreach ($priority as $p) {
-  if (in_array($p, $header, true)) $headerOrdered[] = $p;
-}
-$rest = array_values(array_diff($header, $headerOrdered));
-sort($rest);
-$header = array_merge($headerOrdered, $rest);
 
 fputcsv($fp, $header);
 
@@ -163,14 +167,14 @@ if (!rename($tmp, $filepath)) {
   exit;
 }
 
-
 // Append to a lightweight index log (CSV)
 $indexPath = $DATA_DIR . DIRECTORY_SEPARATOR . "index.csv";
 $line = [
   gmdate("c"),
   $filename,
-  $assignmentId,
-  $workerHash,
+  $studyId,
+  $sessionId,
+  $pidHash,
   $_SERVER["REMOTE_ADDR"] ?? ""
 ];
 $fp = fopen($indexPath, "a");
@@ -184,9 +188,9 @@ $out = ["ok" => true, "savedAs" => $filename];
 
 // Debug info only when requested
 if (isset($_GET["debug"]) && $_GET["debug"] === "1") {
-  $out["dataDir"] = realpath($DATA_DIR);
+  $out["dataDir"]   = realpath($DATA_DIR);
   $out["scriptDir"] = __DIR__;
-  $out["filePath"] = $filepath;
+  $out["filePath"]  = $filepath;
 }
 
 echo json_encode($out);

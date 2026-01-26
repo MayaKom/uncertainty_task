@@ -145,6 +145,15 @@
 /* Inactive slider: hide thumb and mute track */
 .confidence-slider.inactive {
     opacity: 0.3;
+    cursor: pointer;
+    transition: opacity 120ms ease, box-shadow 120ms ease;
+}
+
+/* hover highlight (does NOT color the track or show thumb) */
+.confidence-slider.inactive:hover {
+    opacity: 0.6;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.18);
+    border-radius: 999px;
 }
 
 /* Hide the thumb initially */
@@ -152,18 +161,32 @@
     opacity: 0;
 }
 
+.confidence-slider.inactive+.slider-value {
+    opacity: 0;
+}
+
 .confidence-slider.inactive::-moz-range-thumb {
     opacity: 0;
 }
 
-/* Optional: hide the track highlight */
 .confidence-slider.inactive::-webkit-slider-runnable-track {
     background-color: #ccc;
 }
 
-.confidence-slider.inactive::-moz-range-track {
-    background-color: #ccc;
+.slider-container {
+    position: relative;
+    width: 100%;
 }
+
+.slider-value {
+    position: absolute;
+    top: -15px;
+    transform: translateX(-50%);
+    font-size: 14px;
+    color: #000;
+    pointer-events: none;
+}
+
 
 .jspsych-survey-likert-opts {
     border: none !important;
