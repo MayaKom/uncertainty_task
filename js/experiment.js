@@ -427,10 +427,6 @@ function makeTask2TestTrial({ attemptLabel, showKnownExampleText }) {
         stimulus: `
       <div style="max-width:1000px; margin:0 auto;">
         <div style="text-align:left; margin:0 auto 10px; max-width:800px;">
-          ${showKnownExampleText ? `
-            You already know that <span class="btn-inline" style="font-family: Orbitron">2-4-6</span> activates the robot.
-            This set appears on the left with "yes" next to it.
-          ` : ``}
           <strong>Your task is to figure out the rule</strong> that makes this robot go. To test a set:
         </div>
         <ul style="list-style-position: inside; text-align: left; max-width: 500px; margin: 0 auto 10px auto; padding: 0;">
@@ -599,15 +595,15 @@ function makeRuleConfidenceTrial(attemptLabel) {
         type: jsPsychHtmlButtonResponse,
         stimulus: `
        <div class="slider-question">
-        <div style="font-size:20px">How certain are you that your rule correctly explains how this robot operates?</div>
+        <div style="font-size:20px"><strong>How confident are you that your rule correctly explains how this robot operates?</strong></div>
         <div style="font-size:15px; margin-bottom:10px">Click anywhere on the slider to indicate your answer.</div>
         <div class="slider-container">
         <input type="range" min="0" max="100" value="50" id="cert" class="confidence-slider inactive">
         <div class="slider-value">50</div>
         </div>     
         <div class="slider-labels">
-          <span>Not certain at all</span>
-          <span>Completely certain</span>
+          <span>Not confident at all</span>
+          <span>Completely confident</span>
         </div>
        </div>
     `,
@@ -733,8 +729,8 @@ function makeSubmitRuleTrial(attemptLabel) {
                     waitingForContinue = true;
 
                     rulePrompt.innerHTML = `
-                    <p>Thank you for submitting your guess.<br>This is not the rule that activates this robot.<br>You have another 
-                    chance to try out other number sets and guess the rule again.<br>Press <span class="btn-inline"> Continue</span> to proceed.</p>`;
+                    <p>Thank you for submitting your guess.<br>This rule might be incorrect.<br>You have another 
+                    chance to try out other number sets and guess the rule again.<br>Press <span class="btn-inline">Continue</span> to proceed.</p>`;
 
                     subBtn.textContent = "Continue";
 
@@ -761,51 +757,24 @@ function makeSubmitRuleTrial(attemptLabel) {
 const submit_rule1 = makeSubmitRuleTrial(1);
 const submit_rule2 = makeSubmitRuleTrial(2);
 
-
-// Attempt 1: test → confidence → submit
-const attempt1_timeline = {
-    timeline: [task2_trial1, rule_conf1, submit_rule1]
-};
-
-// Attempt 2: test → confidence → submit
-const attempt2_timeline = {
-    timeline: [task2_trial2, rule_conf2, submit_rule2]
-};
-
-// Branch: run attempt 2 ONLY if attempt 1 rule guess matches even/2/two
-const even_rule_branch = {
-    timeline: [attempt2_timeline],
-    conditional_function: function () {
-        const last = jsPsych.data.get().last(1).values()[0];
-        const should_run = last.trial_cat === "robot_task" &&
-            last.attempt === 1 &&
-            last.even_rule === true;
-
-        if (should_run) task2_state.attempt_index = 1;
-        return should_run;
-    }
-};
-
-timeline.push(attempt1_timeline);
-timeline.push(even_rule_branch);
-
 var submit_alt_rule = {
     type: jsPsychHtmlKeyboardResponse,
     choices: "NO_KEYS",
     response_ends_trial: false,
 
-    stimulus: () => `
+    stimulus: () => {
+        ensureGivenExample();
+        return `
+
     <div style="max-width:1100px; margin:0 auto;">
 
       <!-- TOP centered text -->
       <div style="text-align:center;  margin:0 auto 30px auto; line-height:1.5; max-width:800px;">
-        <div style="font-size: 15px; margin-bottom:15px">
-          Thank you for submitting your guess!<br>
-          You will see the result on the final feedback screen.
-        </div>
-        <div style="font-size: 20px;">
-          If your guess turns out to be incorrect, what else could the robot’s rule have been?
-          In the boxes below, please <strong>provide as many alternative rules as you can</strong>.
+        <div style="font-size: 20px; margin-bottom:15px">
+         Before you begin testing to discover the rule, use the boxes below to list <strong>as many possible rules as you can think of</strong>.
+         What might the robot’s rule be?
+         <br><br>You know that <span class="btn-inline" style="font-family: Orbitron">2-4-6</span> activated the robot.
+         This set appears on the left with "yes" next to it.
         </div>
       </div>
 
@@ -826,7 +795,7 @@ var submit_alt_rule = {
           <div id="alt-rules">
             ${[1, 2, 3, 4, 5, 6].map(i => `
               <input type="text" class="alt-rule-input"
-                placeholder="Alternative rule ${i}"
+                placeholder="Possible rule ${i}"
                 style="width:100%; font-size:14px; padding:10px; margin-bottom:10px; box-sizing:border-box;" />
             `).join("")}
           </div>
@@ -841,7 +810,8 @@ var submit_alt_rule = {
 
       </div>
     </div>
-  `,
+  `;
+    },
 
     on_load: function () {
         const subBtn = document.getElementById("submit-rule-btn");
@@ -870,10 +840,49 @@ var submit_alt_rule = {
     }
 };
 
-
 timeline.push(submit_alt_rule)
 
+// Attempt 1: test → confidence → submit
+const attempt1_timeline = {
+    timeline: [task2_trial1, rule_conf1, submit_rule1]
+};
+
+
+// Attempt 2: test → confidence → submit
+const attempt2_timeline = {
+    timeline: [task2_trial2, rule_conf2, submit_rule2]
+};
+
+
+const even_rule_branch = {
+    timeline: [attempt2_timeline],
+    conditional_function: function () {
+        const last = jsPsych.data.get().last(1).values()[0];
+        const should_run = last.trial_cat === "robot_task" &&
+            last.attempt === 1 &&
+            last.even_rule === true;
+
+        if (should_run) task2_state.attempt_index = 1;
+        return should_run;
+    }
+};
+
+timeline.push(attempt1_timeline);
+
+
+timeline.push(even_rule_branch);
+
+
 var robot_correct_rule = ["The correct rule for the robot is: Even number increasing by 2"]
+
+var robot_thanks = {
+    type: jsPsychHtmlKeyboardResponse,
+    choices: [" "],
+    stimulus: `<div style="max-width:800px">Thank you!<br><br>Your response is being evaluted and you will see the result on the final feedback screen.
+    <br><br>Press the <span class="kbd">SPACE</span> bar to proceed.</div>`
+}
+
+timeline.push(robot_thanks)
 
 var task1_instructions1 = {
     type: jsPsychHtmlKeyboardResponse,
@@ -1359,24 +1368,25 @@ const sliderQs = {
     <div style="font-size:25px; max-width:800px">
     Before moving on, answer a couple of questions <strong>about the choice you just made</strong>.
     </div>
-    <div style="font-size:20px; margin-bottom:15px;">
+    <div style="font-size:12px; margin-bottom:15px;">
     Click anywhere on each slider to indicate your answer.
     </div>
     <div class="slider-question">
-      <p>How certain do you feel about your answer?</p>
+      <p style="margin-bottom:7px"><strong>How confident do you feel about your answer?</strong></p>
+      <div style="font-size:12px">0 means "Just guessing", 100 means "Compeletely confident"</div>
       <div class="slider-container">
     <input type="range" min="0" max="100" value="50"
            id="conf" class="confidence-slider inactive">
     <div class="slider-value">50</div>
   </div>  
       <div class="slider-labels">
-        <span>Not certain at all</span>
-        <span>Completely certain</span>
+        <span>Just guessing</span>
+        <span>Completely confident</span>
       </div>
     </div>   
 
     <div class="slider-question">
-      <p>How unpleasant did it feel to decide about a label in this last task?</p>
+      <p><strong>How unpleasant did it feel to decide about a label in this last task?</strong></p>
       <div class="slider-container">
     <input type="range" min="0" max="100" value="50"
            id="unpl" class="confidence-slider inactive">
@@ -1390,14 +1400,15 @@ const sliderQs = {
     </div>
 
     <div class="slider-question">
-      <p>At most, how confident could a reasonable person have been in choosing a label in this last task?</p>
-        <div class="slider-container">
+      <p style="margin-bottom:7px"><strong>What is the highest level of confidence a reasonable person could have achieved when selecting a label in the previous task?</strong></p>
+      <div style="font-size:12px">0 means "Just guessing", 100 means "Compeletely confident"</div>  
+      <div class="slider-container">
     <input type="range" min="0" max="100" value="50"
            id="conf_reas" class="confidence-slider inactive">
     <div class="slider-value">50</div>
   </div>
       <div class="slider-labels">
-        <span>Not confident at all</span>
+        <span>Just guessing</span>
         <span>Completely confident</span>
       </div>
     </div>
@@ -1507,8 +1518,9 @@ timeline.push(att_check)
 
 var scales_intro = {
     type: jsPsychHtmlKeyboardResponse,
-    stimulus: `<p>Thank you for completing the task!<br><br>Your final reward amount is being calculated.<br><br>
-    Please answer some survey questions before finishing the study.<br><br>
+    stimulus: `<p>Thank you for completing the task!<br><br>Your final reward is now being calculated.<br><br>
+    Before finishing the study, please answer some survey questions.<br><br>
+    Your honest responses are greatly appreciated.<br><br>
     Press the <span class="kbd">SPACE</span> bar to proceed</p>`,
     choices: [" "]
 }
